@@ -511,7 +511,8 @@ export function trenchWalls(p: Place): Creature {
     update(e) {
       const span = Math.max(40, top - bottom + 30);
       group.scale.y = span / H;
-      const d = 26;
+      // Narrow screens draw creatures at the text layer (30 m); keep the walls behind them.
+      const d = e.halfW(40) < 12 ? 44 : 26;
       const x = e.halfW(d) * 0.9;
       left.position.set(-x, 0, -d);
       right.position.set(x, 0, -d);

@@ -440,3 +440,26 @@ button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent
    pulls every fixed layer out of line. */
 html, body { max-width: 100%; overflow-x: clip; }
 main { overflow-x: clip; }
+
+/* ---- Mobile UX review fixes ---- */
+/* Touch targets: at least 44px tall without changing how things look. */
+.callout a { padding: 14px 8px; margin: -14px -8px; }
+.callout.on { pointer-events: auto; }
+.skip { min-height: 44px; padding: 10px 14px; margin-top: 10px; border-radius: 8px; }
+.skip.demo { margin-top: 0; }
+.skip:active:not(:disabled) { color: var(--ink); background: rgba(127, 227, 255, 0.08); }
+/* Visible focus for keyboard and switch users. */
+button:focus-visible, a:focus-visible, select:focus-visible {
+  outline: 2px solid var(--glow); outline-offset: 3px; border-radius: 6px;
+}
+/* Safe areas: keep fixed panels clear of the notch and home indicator. */
+.hud { top: calc(16px + env(safe-area-inset-top)); right: calc(16px + env(safe-area-inset-right)); }
+.shelf { bottom: calc(16px + env(safe-area-inset-bottom)); }
+@media (max-width: 640px) {
+  .hud { top: calc(10px + env(safe-area-inset-top)); right: calc(10px + env(safe-area-inset-right)); }
+  .eiffel-count { top: calc(10px + env(safe-area-inset-top)); font-size: 0.78rem; }
+  .shelf { bottom: calc(10px + env(safe-area-inset-bottom)); }
+  .callout a { font-size: 0.8rem; }
+}
+/* No text under 12px. */
+.slot { font-size: 0.75rem; }

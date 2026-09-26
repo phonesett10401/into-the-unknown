@@ -155,7 +155,7 @@ export default function Callouts() {
             <p className="c-name">{info.name}</p>
             <p className="c-meta">{info.meta}</p>
             <p className="c-note">{info.note}</p>
-            <a href={info.url} target="_blank" rel="noreferrer">
+            <a href={info.url} target="_blank" rel="noreferrer" aria-label={`See more about ${info.name} (opens in a new tab)`}>
               See more ↗
             </a>
           </div>

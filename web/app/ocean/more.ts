@@ -453,9 +453,9 @@ export function abyssalPlain(p: Place, nautile: THREE.Object3D): Creature {
       walk: 2.5,
     },
     narrow: {
-      tripods: [[-4.3, -22, 1.5], [-5.4, -31, 1.5], [-3.9, -38, 1.5]],
-      pigs: pigs.map((_, i) => [-4.2 - (i % 3) * 0.9, -25 - i * 2.4, 1.5] as Spot),
-      nautile: [-1.2, 2.2, -34, 0.55],
+      tripods: [[-4.3, -22, 1], [-5.4, -31, 1], [-3.9, -38, 1]],
+      pigs: pigs.map((_, i) => [-4.2 - (i % 3) * 0.9, -25 - i * 2.4, 1] as Spot),
+      nautile: [-1.6, 2.2, -34, 0.38],
       walk: 0.6,
     },
   };

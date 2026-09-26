@@ -410,7 +410,11 @@ function Gate(props: {
           </button>
         ))}
       </div>
-      {error && <p className="error">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
       {allowSkip && (
         <button className="skip" onClick={skip} disabled={!!busy}>
           {busy === "skip" ? "Confirming…" : "or skip for 0.001 AVAX"}

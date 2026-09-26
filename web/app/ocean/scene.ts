@@ -408,6 +408,8 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
 
     env.t = time.value; env.dt = dt; env.camY = camY; env.light = light; env.lamp = lampK; env.fogDensity = fogD;
     const viewHalf = TAN * 100;
+    // Phones: everything from 5,400 m down is drawn at two-thirds size; the deep scenes crowd a narrow screen.
+    const deepY = mobile ? place.wy(5400) : null;
     for (const c of creatures) {
       const y = c.anchor();
       if (y === null || Math.abs(y - camY) > c.span + viewHalf) {
@@ -417,8 +419,9 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
       c.group.visible = true;
       if (mobile && !c.fixedScale && c.z !== 0) {
         const k = TEXT_Z / c.z;
+        const deep = deepY !== null && y <= deepY ? 0.8 : 1;
         c.group.position.set(c.xn * halfW(PLANE), y, TEXT_Z);
-        c.group.scale.setScalar(narrowK * k);
+        c.group.scale.setScalar(narrowK * k * deep);
       } else {
         c.group.position.set(c.xn * halfW(-c.z || PLANE), y, c.z);
         if (!c.fixedScale) c.group.scale.setScalar(narrowK);
