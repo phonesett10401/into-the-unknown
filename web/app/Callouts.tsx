@@ -24,7 +24,7 @@ export default function Callouts() {
     let obstacleEls: Element[] = [];
     let frame = 0;
     const collect = () => {
-      obstacleEls = [...document.querySelectorAll("main > section > *, .hud .readout, .shelf, .eiffel-count, .toast")];
+      obstacleEls = [...document.querySelectorAll("main > section > *, .hud .readout, .shelf, .eiffel-count, .toast, .diver")];
     };
     return onCallouts((list, compact) => {
       root.current?.classList.toggle("compact", compact);
@@ -45,11 +45,11 @@ export default function Callouts() {
         const el = cards.current[c.key], ln = lines.current[c.key], dot = dots.current[c.key];
         if (!el || !ln || !dot) continue;
         const w = el.offsetWidth, h = el.offsetHeight;
-        // Try the outer side first (open water), above then below; then the inner side.
+        // Prefer above the target (so the label never hides it), outer side first; then below.
         const outer = c.x > vw / 2 ? 1 : -1;
         let spot: { x: number; y: number } | null = null;
-        for (const side of [outer, -outer]) {
-          for (const up of [true, false]) {
+        for (const up of [true, false]) {
+          for (const side of [outer, -outer]) {
             let x = side > 0 ? c.x + gap : c.x - gap - w;
             let y = up ? c.y - h - gap : c.y + gap;
             x = Math.max(12, Math.min(vw - w - 12, x));
