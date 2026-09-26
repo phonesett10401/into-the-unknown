@@ -116,6 +116,7 @@ p { line-height: 1.6; }
   left: 16px;
   z-index: 30;
   max-width: calc(100vw - 260px);
+  line-height: 1.4;
   padding: 10px 14px;
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.75);
@@ -211,7 +212,10 @@ h1, h2, h3, p, li { text-shadow: 0 1px 2px rgba(0, 8, 20, 0.55), 0 2px 14px rgba
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
-.options button:hover:not(:disabled) { background: rgba(127, 227, 255, 0.14); border-color: var(--glow); }
+@media (hover: hover) {
+  .options button:hover:not(:disabled) { background: rgba(127, 227, 255, 0.14); border-color: var(--glow); }
+}
+.options button:active:not(:disabled) { background: rgba(127, 227, 255, 0.2); border-color: var(--glow); }
 .options button:disabled { cursor: default; opacity: 0.6; }
 .options button.pending { opacity: 1; border-color: var(--glow); }
 .error { color: var(--danger); margin: 12px 0 0; font-size: 0.95rem; }
@@ -227,7 +231,7 @@ h1, h2, h3, p, li { text-shadow: 0 1px 2px rgba(0, 8, 20, 0.55), 0 2px 14px rgba
   text-underline-offset: 3px;
   cursor: pointer;
 }
-.skip:hover:not(:disabled) { color: var(--ink-soft); }
+@media (hover: hover) { .skip:hover:not(:disabled) { color: var(--ink-soft); } }
 .count { margin: 16px 0 0; text-align: center; font-family: var(--mono); font-size: 0.78rem; color: var(--ink-faint); }
 
 /* Floor */
@@ -329,7 +333,7 @@ h1, h2, h3, p, li { text-shadow: 0 1px 2px rgba(0, 8, 20, 0.55), 0 2px 14px rgba
 .tower-img {
   position: absolute; left: 0; top: 0; will-change: transform;
   opacity: var(--tower-o, 0.75);
-  filter: brightness(var(--tower-b, 1)) sepia(0.35) hue-rotate(160deg) saturate(0.9);
+
 }
 .diver-tag {
   position: absolute; left: 0; top: 0; white-space: nowrap;
@@ -365,7 +369,7 @@ main > section > * { pointer-events: auto; }
 .callout {
   position: absolute; left: 0; top: 0; width: 250px;
   padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px;
-  background: rgba(2, 14, 30, 0.74); backdrop-filter: blur(8px);
+  background: rgba(2, 14, 30, 0.8);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   opacity: 0; pointer-events: none; transition: opacity 0.3s; will-change: transform;
 }
@@ -378,7 +382,7 @@ main > section > * { pointer-events: auto; }
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
 .callout a { display: inline-block; margin-top: 8px; font-size: 0.8rem; color: var(--glow); text-decoration: none; }
-.callout a:hover { text-decoration: underline; }
+@media (hover: hover) { .callout a:hover { text-decoration: underline; } }
 @media (max-width: 640px) {
   .callouts { z-index: 2; }
   .callout {
@@ -398,3 +402,24 @@ main > section > * { pointer-events: auto; }
 .callouts.compact .c-meta, .callouts.compact .c-note { display: none; }
 .callouts.compact .c-name { font-size: 0.82rem; white-space: nowrap; }
 .callouts.compact .callout a { margin: 0; font-size: 0.74rem; white-space: nowrap; }
+
+.callout.on { backdrop-filter: blur(8px); }
+
+/* Buttons: no double-tap zoom delay, no grey tap flash. */
+button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.ocean { height: 100vh; height: 100lvh; }
+
+/* Phones and touch screens: blur-behind is one of the most expensive effects on a phone GPU,
+   and every panel sits over a live WebGL canvas. Use solid panels instead. */
+@media (max-width: 700px), (pointer: coarse) {
+  *, *::before, *::after { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+  .readout, .shelf, .eiffel-count { background: rgba(3, 14, 30, 0.86); }
+  .card { background: rgba(2, 14, 30, 0.82); }
+  .gate { background: rgba(0, 10, 25, 0.94); box-shadow: none; }
+  .callout { background: rgba(2, 14, 30, 0.92); box-shadow: none; }
+  h1, h2, h3, p, li { text-shadow: 0 1px 3px rgba(0, 8, 20, 0.7); }
+  .options button { min-height: 50px; }
+}
+@media (min-width: 701px) and (pointer: fine) {
+  .tower-img { filter: sepia(0.35) hue-rotate(160deg) saturate(0.9); }
+}

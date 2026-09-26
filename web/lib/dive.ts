@@ -13,6 +13,7 @@ export const dive = {
   zones: [] as ZoneRect[],
   floorTop: null as number | null,
   maxDepth: 10935,
+  oceanLive: false, // when the 3D ocean is drawing, the page background is hidden behind it
 };
 
 const subs = new Set<() => void>();
@@ -69,4 +70,20 @@ export function waterAt(d: number): [number, number, number] {
     }
   }
   return COLOR_STOPS[COLOR_STOPS.length - 1][1];
+}
+
+/**
+ * Viewport height that ignores the phone toolbar showing and hiding during a scroll.
+ * Reads a fixed 100lvh probe (the largest viewport), so it only changes on a real resize or rotation.
+ */
+let probe: HTMLDivElement | null = null;
+export function stableVh(): number {
+  if (typeof document === "undefined") return 800;
+  if (!probe) {
+    probe = document.createElement("div");
+    probe.style.cssText = "position:fixed;top:0;left:0;width:0;height:100vh;visibility:hidden;pointer-events:none;";
+    if (CSS.supports("height", "100lvh")) probe.style.height = "100lvh";
+    document.body.appendChild(probe);
+  }
+  return probe.offsetHeight || window.innerHeight;
 }

@@ -15,7 +15,7 @@ import {
   sendClear,
   sendSkip,
 } from "@/lib/chain";
-import { DEPTH_CURVE, dive, publish, useDepth, waterAt } from "@/lib/dive";
+import { DEPTH_CURVE, dive, publish, stableVh, useDepth, waterAt } from "@/lib/dive";
 import Ocean from "./Ocean";
 import EiffelColumn from "./EiffelColumn";
 import Callouts from "./Callouts";
@@ -66,7 +66,7 @@ export default function Page() {
         el ? [{ top: el.offsetTop, height: el.offsetHeight, from: zones[i].from, to: zones[i].to }] : [],
       );
       dive.floorTop = floorRef.current ? floorRef.current.offsetTop : null;
-      dive.vh = window.innerHeight;
+      dive.vh = stableVh();
     };
     const update = () => {
       raf = 0;
@@ -80,8 +80,11 @@ export default function Page() {
       }
       if (dive.floorTop !== null && mid >= dive.floorTop) d = MAX;
       dive.depth = d;
-      const rgb = waterAt(d);
-      document.body.style.backgroundColor = `rgb(${rgb.map(Math.round).join(",")})`;
+      // The page colour only shows if the 3D ocean is not running; skip the repaint otherwise.
+      if (!dive.oceanLive) {
+        const rgb = waterAt(d);
+        document.body.style.backgroundColor = `rgb(${rgb.map(Math.round).join(",")})`;
+      }
       publish();
     };
     const onScroll = () => {
@@ -136,11 +139,15 @@ export default function Page() {
   }, [account]);
 
   const onCleared = useCallback(
-    (i: number, tx?: TxResult) => {
+    (i: number, tx?: TxResult, offChain?: boolean) => {
       setPassed((p) => p | bit(i));
       setBadges((b) => b | bit(i));
       setToast({
-        text: tx ? `${zones[i].name} badge earned. Final in ${(tx.ms / 1000).toFixed(1)} s` : `${zones[i].name} badge earned`,
+        text: tx
+          ? `${zones[i].name} badge earned. Final in ${(tx.ms / 1000).toFixed(1)} s`
+          : offChain
+            ? `Correct. ${zones[i].name} badge earned on this device. Open the site in a wallet app to record it on Avalanche.`
+            : `${zones[i].name} badge earned`,
         hash: tx?.hash,
       });
       refreshStats();
@@ -326,7 +333,7 @@ function Gate(props: {
   index: number;
   stats: Stats | null;
   ensureAccount: () => Promise<string>;
-  onCleared: (i: number, tx?: TxResult) => void;
+  onCleared: (i: number, tx?: TxResult, offChain?: boolean) => void;
   onSkipped: (i: number, tx?: TxResult) => void;
   onDemoSkipped?: (i: number) => void;
   allowSkip: boolean;
@@ -347,6 +354,11 @@ function Gate(props: {
       onCleared(i);
       return;
     }
+    // No wallet in this browser (most phones): the answer is right, so let them through.
+    if (!window.ethereum) {
+      onCleared(i, undefined, true);
+      return;
+    }
     setBusy(opt);
     try {
       await ensureAccount();
@@ -364,6 +376,10 @@ function Gate(props: {
     setError(null);
     if (!hasContract) {
       onSkipped(i);
+      return;
+    }
+    if (!window.ethereum) {
+      setError("No wallet in this browser. Use the free demo skip below.");
       return;
     }
     setBusy("skip");

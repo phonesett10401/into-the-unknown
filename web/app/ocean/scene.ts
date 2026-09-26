@@ -18,14 +18,15 @@ const TAN = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
  * the page keeps its plain depth-tinted background.
  */
 export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } | null {
+  // Phones: no multisampling and fewer pixels. The scene is soft and fogged, so neither shows.
+  const mobile = window.innerWidth < 700 || matchMedia("(pointer: coarse)").matches;
   let renderer: THREE.WebGLRenderer;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance" });
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobile, alpha: false, powerPreference: "high-performance" });
   } catch {
     return null;
   }
-  const mobile = window.innerWidth < 700;
-  const maxDpr = mobile ? 1.5 : 1.75;
+  const maxDpr = mobile ? 1.25 : 1.75;
   let dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
   renderer.setPixelRatio(dpr);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -283,8 +284,13 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
   let aspect = 1;
   // On narrow screens, shrink each creature together with its movement so it stays in view.
   let narrowK = 1;
-  const resize = () => {
-    const w = window.innerWidth, h = window.innerHeight;
+  // Size from the canvas itself (fixed, 100lvh), so a phone toolbar showing or hiding
+  // mid-scroll never triggers a resize; only real resizes and rotations do.
+  let lastW = 0, lastH = 0;
+  const resize = (force = false) => {
+    const w = canvas.clientWidth || window.innerWidth, h = canvas.clientHeight || window.innerHeight;
+    if (!force && w === lastW && h === lastH) return;
+    lastW = w; lastH = h;
     aspect = w / h;
     narrowK = aspect < 1 ? Math.max(0.5, aspect / 0.9) : 1;
     renderer.setSize(w, h, false);
@@ -295,8 +301,9 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
     bioMat.uniforms.uAspect.value = aspect;
     bioMat.uniforms.uScreenH.value = h * dpr;
   };
-  resize();
-  window.addEventListener("resize", resize);
+  resize(true);
+  const ro = new ResizeObserver(() => resize());
+  ro.observe(canvas);
 
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const halfW = (dist: number) => TAN * dist * aspect;
@@ -323,16 +330,17 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
     if (slow > 1.5 && dpr > 0.75) {
       dpr = Math.max(0.75, dpr - 0.25);
       renderer.setPixelRatio(dpr);
-      resize();
+      resize(true);
       slow = 0;
     }
 
     let target = cameraYForScroll(dive.scrollY + dive.vh / 2);
     const floor = place.floorY();
     if (floor !== null) target = Math.max(target, floor);
-    const ease = reduced ? 1 : 1 - Math.exp(-dt * 10);
+    // Follow the scroll closely: any trailing reads as lag on a touch screen.
+    const ease = reduced ? 1 : 1 - Math.exp(-dt * 28);
     camY = camY === null ? target : camY + (target - camY) * ease;
-    depthS = depthS + (dive.depth - depthS) * (reduced ? 1 : 1 - Math.exp(-dt * 8));
+    depthS = depthS + (dive.depth - depthS) * (reduced ? 1 : 1 - Math.exp(-dt * 20));
     camera.position.set(0, camY, 0);
 
     const light = Math.exp(-depthS / 170);
@@ -389,7 +397,7 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
 
     renderer.render(scene, camera);
 
-    const W = window.innerWidth, H = window.innerHeight;
+    const W = lastW, H = lastH;
     cands.length = 0;
     for (const c of creatures) {
       if (!c.group.visible || !c.tags) continue;
@@ -427,7 +435,7 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
     dispose() {
       cancelAnimationFrame(raf);
       emitCallouts([]);
-      window.removeEventListener("resize", resize);
+      ro.disconnect();
       canvas.removeEventListener("webglcontextlost", onLost);
       renderer.dispose();
     },

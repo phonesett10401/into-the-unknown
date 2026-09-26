@@ -35,6 +35,7 @@ export default function EiffelColumn() {
   const root = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let lastPx = 0, lastO = "";
     const update = () => {
       const vh = dive.vh, vw = window.innerWidth;
       const px = vh * 2.6;
@@ -53,8 +54,10 @@ export default function EiffelColumn() {
         }
         const top = (k * TOWER_M - d) * ppm + vh / 2;
         el.style.visibility = "visible";
-        el.style.height = `${px}px`;
-        el.style.width = `${w}px`;
+        if (px !== lastPx) {
+          el.style.height = `${px}px`;
+          el.style.width = `${w}px`;
+        }
         el.style.transform = `translate3d(${cx - w / 2}px, ${top}px, 0)`;
       }
       if (diver.current) {
@@ -67,10 +70,12 @@ export default function EiffelColumn() {
         const n = d / TOWER_M;
         count.current.textContent = d < 1 ? "0 Eiffel Towers down" : `${n < 10 ? n.toFixed(1) : Math.round(n)} Eiffel Towers down`;
       }
+      lastPx = px;
       if (root.current) {
-        const light = Math.exp(-d / 170);
-        root.current.style.setProperty("--tower-o", String(0.2 + 0.55 * light));
-        root.current.style.setProperty("--tower-b", String(0.5 + 0.5 * light));
+        // Dim with opacity only: it is composited, where a changing filter would repaint the image.
+        const o = (0.14 + 0.5 * Math.exp(-d / 170)).toFixed(3);
+        if (o !== lastO) root.current.style.setProperty("--tower-o", o);
+        lastO = o;
       }
     };
     update();
@@ -86,17 +91,20 @@ export default function EiffelColumn() {
     <div className="eiffel" ref={root} aria-hidden="true">
       {Array.from({ length: SLOTS }, (_, i) => (
         // eslint-disable-next-line @next/next/no-img-element
-        <img
-          key={i}
-          ref={(el) => {
-            towers.current[i] = el;
-          }}
-          className="tower-img"
-          src="/eiffel.svg"
-          alt=""
-          draggable={false}
-          decoding="async"
-        />
+        <picture key={i}>
+          {/* Phones get a small pre-tinted image; desktops keep the detailed drawing. */}
+          <source media="(max-width: 700px), (pointer: coarse)" srcSet="/eiffel-m.webp" />
+          <img
+            ref={(el) => {
+              towers.current[i] = el;
+            }}
+            className="tower-img"
+            src="/eiffel.svg"
+            alt=""
+            draggable={false}
+            decoding="async"
+          />
+        </picture>
       ))}
       <div className="diver" ref={diver}>
         <svg viewBox="0 0 10 30" className="diver-body">

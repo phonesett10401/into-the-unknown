@@ -23,12 +23,22 @@ export default function Callouts() {
     // Everything a label must not cover: page text, gates, the floor's badges, and the fixed chrome.
     let obstacleEls: Element[] = [];
     let frame = 0;
+    // Label sizes, measured once per style. Reading sizes after moving other labels would force
+    // the browser to re-lay-out the page for every label, every frame.
+    const sizes = new Map<string, { w: number; h: number }>();
+    let lastCompact: boolean | null = null;
+    let lastVw = 0;
     const collect = () => {
       obstacleEls = [...document.querySelectorAll("main > section > *, .hud .readout, .shelf, .eiffel-count, .toast, .diver")];
     };
     return onCallouts((list, compact) => {
-      root.current?.classList.toggle("compact", compact);
       const vw = window.innerWidth, vh = window.innerHeight;
+      if (compact !== lastCompact || vw !== lastVw) {
+        root.current?.classList.toggle("compact", compact);
+        sizes.clear();
+        lastCompact = compact;
+        lastVw = vw;
+      }
       if (frame++ % 30 === 0) collect();
       const obstacles: Box[] = [];
       for (const el of obstacleEls) {
@@ -44,7 +54,12 @@ export default function Callouts() {
       for (const c of list) {
         const el = cards.current[c.key], ln = lines.current[c.key], dot = dots.current[c.key];
         if (!el || !ln || !dot) continue;
-        const w = el.offsetWidth, h = el.offsetHeight;
+        let size = sizes.get(c.key);
+        if (!size) {
+          size = { w: el.offsetWidth, h: el.offsetHeight };
+          sizes.set(c.key, size);
+        }
+        const { w, h } = size;
         // Prefer above the target (so the label never hides it), outer side first; then below.
         const outer = c.x > vw / 2 ? 1 : -1;
         let spot: { x: number; y: number } | null = null;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { dive } from "@/lib/dive";
 
 /** Mounts the 3D ocean behind the page. Loaded lazily; if it fails, the canvas removes itself. */
 export default function Ocean() {
@@ -21,13 +22,17 @@ export default function Ocean() {
           console.warn("Ocean failed to start:", e);
           handle = null;
         }
-        if (handle) ref.current.classList.add("live");
+        if (handle) {
+          ref.current.classList.add("live");
+          dive.oceanLive = true;
+        }
         else hide();
       })
       .catch(hide);
     return () => {
       disposed = true;
       handle?.dispose();
+      dive.oceanLive = false;
     };
   }, []);
 
