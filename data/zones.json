@@ -1,0 +1,144 @@
+{
+  "_comment": "Into The Unknown - zone content. Data preparation, permitted before the event. Figures verified 20 September 2026; see SOURCES.md.",
+  "maxDepth": 10935,
+  "maxDepthNote": "Challenger Deep, deepest observed seafloor, 10,935 m +/- 6 m (95% CI), from DSV Limiting Factor submersible transects, June 2020.",
+  "zones": [
+    {
+      "id": 0,
+      "name": "The Sunlight Zone",
+      "scientific": "Epipelagic",
+      "from": 0,
+      "to": 200,
+      "light": "Full daylight. The only layer where photosynthesis works, and where almost everything you can name lives.",
+      "pressureAtm": 21,
+      "blurb": "Everything you picture when you picture the sea happens in the top two hundred metres. It is about two percent of the ocean's volume. Below it, the ocean stops being familiar.",
+      "facts": [
+        "Roughly 2% of the ocean's volume, and the source of nearly all of its food.",
+        "Pressure at the floor of this zone is 21 atmospheres.",
+        "The recreational scuba limit is 40 m. The deepest scuba dive ever made, 332.35 m, ends below this zone.",
+        "The continental shelf usually breaks at about 200 m, so this boundary is also where the seabed falls away."
+      ],
+      "creatures": [
+        { "name": "Blue whale", "scientific": "Balaenoptera musculus", "from": 0, "to": 500, "note": "The largest animal that has ever lived, feeding on some of the smallest." },
+        { "name": "Great white shark", "scientific": "Carcharodon carcharias", "from": 0, "to": 1200, "note": "Tagged individuals drop far past this zone, into water they have no obvious reason to visit." },
+        { "name": "Portuguese man o war", "scientific": "Physalia physalis", "from": 0, "to": 0, "note": "Not one animal. A colony of four kinds of organism that cannot survive apart." }
+      ],
+      "vessels": [
+        { "name": "Recreational scuba", "nation": "-", "year": null, "depth": 40, "note": "The agreed limit for a certified recreational diver." },
+        { "name": "Ahmed Gabr", "nation": "Egypt", "year": 2014, "depth": 332, "note": "Deepest scuba dive on record. Down in 15 minutes, back up over 13 hours 35." }
+      ],
+      "landmark": "The edge of the continental shelf",
+      "landmarkDepth": 200
+    },
+    {
+      "id": 1,
+      "name": "The Twilight Zone",
+      "scientific": "Mesopelagic",
+      "from": 200,
+      "to": 1000,
+      "light": "Blue light only, and less of it every metre. Too dark to grow anything, light enough to be hunted. By 1,000 m the sun is finished.",
+      "pressureAtm": 101,
+      "blurb": "Enough light to see a silhouette, not enough to grow anything. Most of what lives here makes its own light, and every evening the entire zone climbs toward the surface to feed.",
+      "facts": [
+        "Home to the largest animal migration on Earth. It happens vertically, every single night.",
+        "An estimated 90% of the animals here are bioluminescent.",
+        "Pressure at 1,000 m is 101 atmospheres.",
+        "Sonar operators in the Second World War mistook this layer for the seabed. Then it moved at dusk."
+      ],
+      "creatures": [
+        { "name": "Vampire squid", "scientific": "Vampyroteuthis infernalis", "from": 600, "to": 900, "note": "Neither a vampire nor a squid. It eats marine snow, and turns itself inside out when frightened." },
+        { "name": "Lanternfish", "scientific": "Myctophidae", "from": 200, "to": 1000, "note": "Possibly the most abundant vertebrate on the planet. You have almost certainly never seen one." },
+        { "name": "Giant squid", "scientific": "Architeuthis dux", "from": 300, "to": 1000, "note": "Never filmed alive until 2012. It has the largest eye of any known animal, about the size of a dinner plate." }
+      ],
+      "vessels": [
+        { "name": "Nuclear submarine", "nation": "-", "year": null, "depth": 500, "note": "Crush depths are classified. Operating depth is believed to be a few hundred metres." },
+        { "name": "Cuviers beaked whale", "nation": "-", "year": 2014, "depth": 2992, "note": "Not a vessel. The deepest dive ever recorded by any mammal. It passes through this zone and keeps going." }
+      ],
+      "landmark": "The deep scattering layer",
+      "landmarkDepth": 600
+    },
+    {
+      "id": 2,
+      "name": "The Midnight Zone",
+      "scientific": "Bathypelagic",
+      "from": 1000,
+      "to": 4000,
+      "light": "None. Not dim, none. Every photon below this line was made by something alive.",
+      "pressureAtm": 401,
+      "blurb": "The largest habitat on Earth by volume, and it is completely dark, near freezing and almost empty. Whatever lives here has spent its whole existence waiting for food to fall.",
+      "facts": [
+        "The single largest living space on the planet, and one of the least visited.",
+        "The water sits at about 4 degrees C throughout, everywhere in the world.",
+        "Pressure at 4,000 m is 401 atmospheres.",
+        "The average depth of the ocean, roughly 3,700 m, falls inside this zone."
+      ],
+      "creatures": [
+        { "name": "Anglerfish", "scientific": "Ceratiidae", "from": 300, "to": 4000, "note": "The male is a fraction of the size of the female, bites on, and fuses to her permanently, losing his eyes and most of his organs." },
+        { "name": "Sperm whale", "scientific": "Physeter macrocephalus", "from": 0, "to": 2250, "note": "Hunts giant squid in total darkness using sound alone. The scars on their heads are from squid that fought back." },
+        { "name": "Gulper eel", "scientific": "Eurypharynx pelecanoides", "from": 500, "to": 3000, "note": "A mouth with a fish attached. It can swallow prey larger than itself." }
+      ],
+      "vessels": [
+        { "name": "DSV Alvin", "nation": "USA", "year": 1964, "depth": 6500, "note": "Surveyed the Titanic wreck in 1986. Re-certified in 2021 for 6,500 m, which reaches 99% of the seafloor." },
+        { "name": "DSV Shinkai 6500", "nation": "Japan", "year": 1989, "depth": 6500, "note": "Still one of the deepest-diving crewed research submersibles in service." }
+      ],
+      "landmark": "The wreck of RMS Titanic",
+      "landmarkDepth": 3800
+    },
+    {
+      "id": 3,
+      "name": "The Abyss",
+      "scientific": "Abyssopelagic",
+      "from": 4000,
+      "to": 6000,
+      "light": "None, and none for four kilometres above you.",
+      "pressureAtm": 601,
+      "blurb": "A flat, cold, dark plain covering most of the planet's solid surface. We have better maps of Mars.",
+      "facts": [
+        "Abyssal plains cover more of the Earth's surface than every continent combined.",
+        "Pressure at 6,000 m is 601 atmospheres, about 8,800 psi.",
+        "Food arrives as marine snow: the falling remains of everything that died above.",
+        "A single whale carcass can feed an abyssal community for decades."
+      ],
+      "creatures": [
+        { "name": "Dumbo octopus", "scientific": "Grimpoteuthis", "from": 3000, "to": 6957, "note": "Filmed at 6,957 m in the Java Trench in 2020, the first hard proof of a cephalopod living in the hadal zone." },
+        { "name": "Tripod fish", "scientific": "Bathypterois grallator", "from": 800, "to": 4720, "note": "Stands on three stiffened fins on the seabed, faces the current, and waits. It may be functionally blind." },
+        { "name": "Sea pig", "scientific": "Scotoplanes", "from": 1000, "to": 6000, "note": "A sea cucumber that walks across the abyssal plain on inflatable legs, in herds." }
+      ],
+      "vessels": [
+        { "name": "DSV Nautile", "nation": "France", "year": 1984, "depth": 6000, "note": "Recovered thousands of artefacts from the Titanic." },
+        { "name": "DSV Jiaolong", "nation": "China", "year": 2010, "depth": 7062, "note": "Reached 7,062 m in the Mariana Trench in 2012." }
+      ],
+      "landmark": "The abyssal plain",
+      "landmarkDepth": 5000
+    },
+    {
+      "id": 4,
+      "name": "The Hadal Zone",
+      "scientific": "Hadopelagic",
+      "from": 6000,
+      "to": 10935,
+      "light": "None. The zone is named after Hades.",
+      "pressureAtm": 1095,
+      "blurb": "Only the trenches go this deep. Fewer people have stood at the bottom of the Challenger Deep than have walked on the Moon.",
+      "facts": [
+        "The hadal zone exists only in ocean trenches, about 0.25% of the seafloor.",
+        "Pressure at the bottom is roughly 1,100 atmospheres: about a tonne on every square centimetre.",
+        "Fish appear to have a hard physiological limit near 8,200 to 8,400 m. Below that, no fish at all.",
+        "Plastic bags and human-made chemicals have been found at the very bottom."
+      ],
+      "creatures": [
+        { "name": "Hadal snailfish", "scientific": "Pseudoliparis", "from": 6000, "to": 8336, "note": "Filmed at 8,336 m in the Izu-Ogasawara Trench in 2022, the deepest fish ever recorded and close to the limit for any fish." },
+        { "name": "Amphipod", "scientific": "Hirondellea gigas", "from": 6000, "to": 10935, "note": "Swarms the very bottom of the Challenger Deep. Digests wood with an enzyme found nowhere else." },
+        { "name": "Xenophyophore", "scientific": "Xenophyophorea", "from": 500, "to": 10641, "note": "A single-celled organism up to 20 cm across. One cell, the size of your hand." }
+      ],
+      "vessels": [
+        { "name": "Bathyscaphe Trieste", "nation": "Switzerland / USA", "year": 1960, "depth": 10911, "note": "Piccard and Walsh, 23 January 1960. A window cracked on the way down. They stayed twenty minutes." },
+        { "name": "Deepsea Challenger", "nation": "USA", "year": 2012, "depth": 10908, "note": "James Cameron, alone, the first crewed return to the bottom in 52 years." },
+        { "name": "DSV Limiting Factor", "nation": "USA", "year": 2019, "depth": 10925, "note": "The first submersible able to make the trip repeatedly. Its 2020 transects set the depth figure still in use." },
+        { "name": "Fendouzhe", "nation": "China", "year": 2020, "depth": 10909, "note": "Chinese national record, 10 November 2020. Thirteen dives, eight of them past 10,000 m." }
+      ],
+      "landmark": "Challenger Deep",
+      "landmarkDepth": 10935
+    }
+  ]
+}
