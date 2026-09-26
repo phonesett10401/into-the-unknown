@@ -24,21 +24,24 @@
           "scientific": "Balaenoptera musculus",
           "from": 0,
           "to": 500,
-          "note": "The largest animal that has ever lived, feeding on some of the smallest."
+          "note": "The largest animal that has ever lived, feeding on some of the smallest.",
+          "url": "https://en.wikipedia.org/wiki/Blue_whale"
         },
         {
           "name": "Great white shark",
           "scientific": "Carcharodon carcharias",
           "from": 0,
           "to": 1200,
-          "note": "Tagged individuals drop far past this zone, into water they have no obvious reason to visit."
+          "note": "Tagged individuals drop far past this zone, into water they have no obvious reason to visit.",
+          "url": "https://en.wikipedia.org/wiki/Great_white_shark"
         },
         {
           "name": "Portuguese man o war",
           "scientific": "Physalia physalis",
           "from": 0,
           "to": 0,
-          "note": "Not one animal. A colony of four kinds of organism that cannot survive apart."
+          "note": "Not one animal. A colony of four kinds of organism that cannot survive apart.",
+          "url": "https://en.wikipedia.org/wiki/Portuguese_man_o%27_war"
         }
       ],
       "vessels": [
@@ -47,7 +50,8 @@
           "nation": "-",
           "year": null,
           "depth": 40,
-          "note": "The agreed limit for a certified recreational diver."
+          "note": "The agreed limit for a certified recreational diver.",
+          "url": "https://en.wikipedia.org/wiki/Recreational_diving"
         }
       ],
       "landmark": "The edge of the continental shelf",
@@ -74,21 +78,24 @@
           "scientific": "Vampyroteuthis infernalis",
           "from": 600,
           "to": 900,
-          "note": "Neither a vampire nor a squid. It eats marine snow, and turns itself inside out when frightened."
+          "note": "Neither a vampire nor a squid. It eats marine snow, and turns itself inside out when frightened.",
+          "url": "https://en.wikipedia.org/wiki/Vampire_squid"
         },
         {
           "name": "Lanternfish",
           "scientific": "Myctophidae",
           "from": 200,
           "to": 1000,
-          "note": "Possibly the most abundant vertebrate on the planet. You have almost certainly never seen one."
+          "note": "Possibly the most abundant vertebrate on the planet. You have almost certainly never seen one.",
+          "url": "https://en.wikipedia.org/wiki/Lanternfish"
         },
         {
           "name": "Giant squid",
           "scientific": "Architeuthis dux",
           "from": 300,
           "to": 1000,
-          "note": "Never filmed alive until 2012. Its eyes reach about 27 cm across, matched only by the colossal squid."
+          "note": "Never filmed alive until 2012. Its eyes reach about 27 cm across, matched only by the colossal squid.",
+          "url": "https://en.wikipedia.org/wiki/Giant_squid"
         }
       ],
       "vessels": [
@@ -97,14 +104,16 @@
           "nation": "Egypt",
           "year": 2014,
           "depth": 332,
-          "note": "Deepest scuba dive on record. Down in 15 minutes, back up over 13 hours 35."
+          "note": "Deepest scuba dive on record. Down in 15 minutes, back up over 13 hours 35.",
+          "url": "https://www.guinnessworldrecords.com/news/2014/9/ahmed-gabr-breaks-record-for-deepest-scuba-dive-at-more-than-1000-feet-60537"
         },
         {
           "name": "Nuclear submarine",
           "nation": "-",
           "year": null,
           "depth": 500,
-          "note": "Crush depths are classified. Operating depth is believed to be a few hundred metres."
+          "note": "Crush depths are classified. Operating depth is believed to be a few hundred metres.",
+          "url": "https://en.wikipedia.org/wiki/Nuclear_submarine"
         }
       ],
       "landmark": "The deep scattering layer",
@@ -131,28 +140,32 @@
           "scientific": "Ceratiidae",
           "from": 300,
           "to": 4000,
-          "note": "The male is a fraction of the size of the female, bites on, and fuses to her permanently, losing his eyes and most of his organs."
+          "note": "The male is a fraction of the size of the female, bites on, and fuses to her permanently, losing his eyes and most of his organs.",
+          "url": "https://en.wikipedia.org/wiki/Anglerfish"
         },
         {
           "name": "Sperm whale",
           "scientific": "Physeter macrocephalus",
           "from": 0,
           "to": 2250,
-          "note": "Hunts giant squid in total darkness using sound alone. The scars on their heads are from squid that fought back."
+          "note": "Hunts giant squid in total darkness using sound alone. The scars on their heads are from squid that fought back.",
+          "url": "https://en.wikipedia.org/wiki/Sperm_whale"
         },
         {
           "name": "Colossal squid",
           "scientific": "Mesonychoteuthis hamiltoni",
           "from": 100,
           "to": 2000,
-          "note": "The heaviest invertebrate known: one weighed 495 kg. First filmed alive in its own habitat in March 2025, a 30 cm juvenile at 600 m."
+          "note": "The heaviest invertebrate known: one weighed 495 kg. First filmed alive in its own habitat in March 2025, a 30 cm juvenile at 600 m.",
+          "url": "https://en.wikipedia.org/wiki/Colossal_squid"
         },
         {
           "name": "Gulper eel",
           "scientific": "Eurypharynx pelecanoides",
           "from": 500,
           "to": 3000,
-          "note": "A mouth with a fish attached. It can swallow prey larger than itself."
+          "note": "A mouth with a fish attached. It can swallow prey larger than itself.",
+          "url": "https://en.wikipedia.org/wiki/Gulper_eel"
         }
       ],
       "vessels": [
@@ -161,7 +174,8 @@
           "nation": "-",
           "year": 2014,
           "depth": 2992,
-          "note": "Not a vessel. The deepest dive ever recorded by any mammal, and it ends here, in the dark."
+          "note": "Not a vessel. The deepest dive ever recorded by any mammal, and it ends here, in the dark.",
+          "url": "https://en.wikipedia.org/wiki/Cuvier%27s_beaked_whale"
         }
       ],
       "landmark": "The wreck of RMS Titanic",
@@ -188,21 +202,24 @@
           "scientific": "Grimpoteuthis",
           "from": 3000,
           "to": 6957,
-          "note": "Filmed at 6,957 m in the Java Trench in 2020, the first hard proof of a cephalopod living in the hadal zone."
+          "note": "Filmed at 6,957 m in the Java Trench in 2020, the first hard proof of a cephalopod living in the hadal zone.",
+          "url": "https://en.wikipedia.org/wiki/Grimpoteuthis"
         },
         {
           "name": "Tripod fish",
           "scientific": "Bathypterois grallator",
           "from": 800,
           "to": 4720,
-          "note": "Stands on three stiffened fins on the seabed, faces the current, and waits. It may be functionally blind."
+          "note": "Stands on three stiffened fins on the seabed, faces the current, and waits. It may be functionally blind.",
+          "url": "https://en.wikipedia.org/wiki/Bathypterois_grallator"
         },
         {
           "name": "Sea pig",
           "scientific": "Scotoplanes",
           "from": 1000,
           "to": 6000,
-          "note": "A sea cucumber that walks across the abyssal plain on inflatable legs, in herds."
+          "note": "A sea cucumber that walks across the abyssal plain on inflatable legs, in herds.",
+          "url": "https://en.wikipedia.org/wiki/Scotoplanes"
         }
       ],
       "vessels": [
@@ -211,7 +228,8 @@
           "nation": "France",
           "year": 1984,
           "depth": 6000,
-          "note": "Recovered thousands of artefacts from the Titanic."
+          "note": "Recovered thousands of artefacts from the Titanic.",
+          "url": "https://en.wikipedia.org/wiki/Nautile"
         }
       ],
       "landmark": "The abyssal plain",
@@ -238,21 +256,24 @@
           "scientific": "Pseudoliparis",
           "from": 6000,
           "to": 8336,
-          "note": "Filmed at 8,336 m in the Izu-Ogasawara Trench in 2022, the deepest fish ever recorded and close to the limit for any fish."
+          "note": "Filmed at 8,336 m in the Izu-Ogasawara Trench in 2022, the deepest fish ever recorded and close to the limit for any fish.",
+          "url": "https://en.wikipedia.org/wiki/Pseudoliparis_swirei"
         },
         {
           "name": "Amphipod",
           "scientific": "Hirondellea gigas",
           "from": 6000,
           "to": 10935,
-          "note": "Swarms the very bottom of the Challenger Deep. Digests wood with an enzyme found nowhere else."
+          "note": "Swarms the very bottom of the Challenger Deep. Digests wood with an enzyme found nowhere else.",
+          "url": "https://en.wikipedia.org/wiki/Amphipoda"
         },
         {
           "name": "Xenophyophore",
           "scientific": "Xenophyophorea",
           "from": 500,
           "to": 10641,
-          "note": "A single-celled organism up to 20 cm across. One cell, the size of your hand."
+          "note": "A single-celled organism up to 20 cm across. One cell, the size of your hand.",
+          "url": "https://en.wikipedia.org/wiki/Xenophyophorea"
         }
       ],
       "vessels": [
@@ -261,49 +282,56 @@
           "nation": "USA",
           "year": 1964,
           "depth": 6500,
-          "note": "Surveyed the Titanic wreck in 1986. Re-certified in 2021 for 6,500 m, which reaches 99% of the seafloor."
+          "note": "Surveyed the Titanic wreck in 1986. Re-certified in 2021 for 6,500 m, which reaches 99% of the seafloor.",
+          "url": "https://en.wikipedia.org/wiki/DSV_Alvin"
         },
         {
           "name": "DSV Shinkai 6500",
           "nation": "Japan",
           "year": 1989,
           "depth": 6500,
-          "note": "Still one of the deepest-diving crewed research submersibles in service."
+          "note": "Still one of the deepest-diving crewed research submersibles in service.",
+          "url": "https://en.wikipedia.org/wiki/Shinkai_6500"
         },
         {
           "name": "DSV Jiaolong",
           "nation": "China",
           "year": 2010,
           "depth": 7062,
-          "note": "Reached 7,062 m in the Mariana Trench in 2012."
+          "note": "Reached 7,062 m in the Mariana Trench in 2012.",
+          "url": "https://en.wikipedia.org/wiki/Jiaolong_(submersible)"
         },
         {
           "name": "Deepsea Challenger",
           "nation": "USA",
           "year": 2012,
           "depth": 10908,
-          "note": "James Cameron, alone, the first crewed return to the bottom in 52 years."
+          "note": "James Cameron, alone, the first crewed return to the bottom in 52 years.",
+          "url": "https://en.wikipedia.org/wiki/Deepsea_Challenger"
         },
         {
           "name": "Fendouzhe",
           "nation": "China",
           "year": 2020,
           "depth": 10909,
-          "note": "Chinese national record, 10 November 2020. Thirteen dives, eight of them past 10,000 m."
+          "note": "Chinese national record, 10 November 2020. Thirteen dives, eight of them past 10,000 m.",
+          "url": "https://en.wikipedia.org/wiki/Fendouzhe"
         },
         {
           "name": "Bathyscaphe Trieste",
           "nation": "Switzerland / USA",
           "year": 1960,
           "depth": 10911,
-          "note": "Piccard and Walsh, 23 January 1960. A window cracked on the way down. They stayed twenty minutes."
+          "note": "Piccard and Walsh, 23 January 1960. A window cracked on the way down. They stayed twenty minutes.",
+          "url": "https://en.wikipedia.org/wiki/Trieste_(bathyscaphe)"
         },
         {
           "name": "DSV Limiting Factor",
           "nation": "USA",
           "year": 2019,
           "depth": 10925,
-          "note": "The first submersible able to make the trip repeatedly. Its 2020 transects set the depth figure still in use."
+          "note": "The first submersible able to make the trip repeatedly. Its 2020 transects set the depth figure still in use.",
+          "url": "https://en.wikipedia.org/wiki/DSV_Limiting_Factor"
         }
       ],
       "landmark": "Challenger Deep",
