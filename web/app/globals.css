@@ -423,3 +423,15 @@ button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent
 @media (min-width: 701px) and (pointer: fine) {
   .tower-img { filter: sepia(0.35) hue-rotate(160deg) saturate(0.9); }
 }
+
+/* Phones: the tower is wider than the screen, so it sits behind the text. Keep it a faint ghost. */
+@media (max-width: 700px) {
+  .eiffel .tower-img { opacity: calc(var(--tower-o, 0.6) * 0.45); }
+  .surface::before {
+    left: -10vw; width: 120vw; bottom: 4vh; height: 75vh;
+    background: radial-gradient(ellipse 75% 60% at 40% 55%, rgba(0, 20, 44, 0.62), transparent 78%);
+  }
+  .shelf { padding: 5px 8px; gap: 5px; }
+  .slot { width: 24px; height: 24px; font-size: 0.68rem; }
+  main > section { padding-bottom: 64px; }
+}
