@@ -21,7 +21,10 @@ export default function Callouts() {
     let shown = new Set<string>();
     type Box = { left: number; top: number; right: number; bottom: number };
     // Everything a label must not cover: page text, gates, the floor's badges, and the fixed chrome.
+    // Hard obstacles are never covered. Soft ones (paragraph blocks) may be covered by a label on a
+    // phone when there is no clear spot, since there text fills the whole width.
     let obstacleEls: Element[] = [];
+    let hardEls = new Set<Element>();
     let frame = 0;
     // Label sizes, measured once per style. Reading sizes after moving other labels would force
     // the browser to re-lay-out the page for every label, every frame.
@@ -29,7 +32,9 @@ export default function Callouts() {
     let lastCompact: boolean | null = null;
     let lastVw = 0;
     const collect = () => {
-      obstacleEls = [...document.querySelectorAll("main > section > *, .hud .readout, .shelf, .eiffel-count, .toast, .diver")];
+      const HARD = ".gate, h1, h2, .landmark, .collection, .verdict, .earn-back, .again, .hud .readout, .shelf, .eiffel-count, .toast, .diver";
+      hardEls = new Set(document.querySelectorAll(HARD));
+      obstacleEls = [...new Set([...document.querySelectorAll("main > section > *"), ...hardEls])];
     };
     return onCallouts((list, compact) => {
       const vw = window.innerWidth, vh = window.innerHeight;
@@ -40,16 +45,18 @@ export default function Callouts() {
         lastVw = vw;
       }
       if (frame++ % 30 === 0) collect();
-      const obstacles: Box[] = [];
+      const obstacles: (Box & { hard: boolean })[] = [];
       for (const el of obstacleEls) {
         const r = el.getBoundingClientRect();
         if (r.bottom < 0 || r.top > vh || r.width === 0) continue;
-        obstacles.push({ left: r.left - 8, top: r.top - 8, right: r.right + 8, bottom: r.bottom + 8 });
+        obstacles.push({ left: r.left - 8, top: r.top - 8, right: r.right + 8, bottom: r.bottom + 8, hard: hardEls.has(el) });
       }
       const gap = vw < 640 ? 22 : 44;
       const placed: Box[] = [];
+      const overlaps = (o: Box, x: number, y: number, w: number, h: number) => x < o.right && x + w > o.left && y < o.bottom && y + h > o.top;
+      let allowSoft = false;
       const hits = (x: number, y: number, w: number, h: number) =>
-        [...obstacles, ...placed].some((o) => x < o.right && x + w > o.left && y < o.bottom && y + h > o.top);
+        obstacles.some((o) => (o.hard || !allowSoft) && overlaps(o, x, y, w, h)) || placed.some((o) => overlaps(o, x, y, w, h));
       const now = new Set<string>();
       for (const c of list) {
         const el = cards.current[c.key], ln = lines.current[c.key], dot = dots.current[c.key];
@@ -63,6 +70,9 @@ export default function Callouts() {
         // Prefer above the target (so the label never hides it), outer side first; then below.
         const outer = c.x > vw / 2 ? 1 : -1;
         let spot: { x: number; y: number } | null = null;
+        allowSoft = false;
+        for (const pass of vw < 700 ? [0, 1] : [0]) {
+        allowSoft = pass === 1;
         for (const up of [true, false]) {
           for (const side of [outer, -outer]) {
             let x = side > 0 ? c.x + gap : c.x - gap - w;
@@ -75,6 +85,8 @@ export default function Callouts() {
             }
           }
           if (spot) break;
+        }
+        if (spot) break;
         }
         if (!spot) continue; // nowhere clear right now: skip rather than cover text
         now.add(c.key);

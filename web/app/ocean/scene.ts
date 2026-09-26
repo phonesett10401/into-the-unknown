@@ -26,7 +26,7 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
   } catch {
     return null;
   }
-  const maxDpr = mobile ? 1.25 : 1.75;
+  const maxDpr = mobile ? 1 : 1.75;
   let dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
   renderer.setPixelRatio(dpr);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -280,6 +280,29 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
   ];
   creatures.forEach((c) => scene.add(c.group));
 
+  // Lights that live inside creatures (the anglerfish lure) are moved to the scene root and kept
+  // there permanently. If they came and went with their creature, the light count would change
+  // and every material would recompile: a visible freeze, worst on phones.
+  const rideLights: { light: THREE.Light; at: THREE.Object3D; owner: Creature; base: number }[] = [];
+  for (const c of creatures) {
+    const found: THREE.Light[] = [];
+    c.group.traverse((o) => {
+      if ((o as THREE.Light).isLight) found.push(o as THREE.Light);
+    });
+    for (const light of found) {
+      const at = new THREE.Object3D();
+      light.parent!.add(at);
+      at.position.copy(light.position);
+      scene.add(light);
+      rideLights.push({ light, at, owner: c, base: (light as THREE.PointLight).distance ?? 0 });
+    }
+  }
+  const lightPos = new THREE.Vector3();
+
+  // On phones, sit every creature at the text layer's distance (scaled up to look the same size),
+  // so it scrolls at the same speed as the words instead of racing past in front of them.
+  const TEXT_Z = -PLANE;
+
   // ---------- sizing ----------
   let aspect = 1;
   // On narrow screens, shrink each creature together with its movement so it stays in view.
@@ -338,7 +361,8 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
     const floor = place.floorY();
     if (floor !== null) target = Math.max(target, floor);
     // Follow the scroll closely: any trailing reads as lag on a touch screen.
-    const ease = reduced ? 1 : 1 - Math.exp(-dt * 28);
+    // Phones: lock to the scroll, since any easing reads as lag under a finger.
+    const ease = reduced || mobile ? 1 : 1 - Math.exp(-dt * 28);
     camY = camY === null ? target : camY + (target - camY) * ease;
     depthS = depthS + (dive.depth - depthS) * (reduced ? 1 : 1 - Math.exp(-dt * 20));
     camera.position.set(0, camY, 0);
@@ -349,7 +373,8 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
     const rgb = waterAt(depthS);
     water.setRGB(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255, THREE.SRGBColorSpace);
     fog.color.copy(water);
-    fog.density = fogD;
+    // Phones draw creatures further back (at the text layer), so thin the fog to match.
+    fog.density = mobile ? fogD * 0.65 : fogD;
     waterVec.set(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255);
     renderer.setClearColor(water);
 
@@ -390,11 +415,26 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
         continue;
       }
       c.group.visible = true;
-      c.group.position.set(c.xn * halfW(-c.z || PLANE), y, c.z);
-      if (!c.fixedScale) c.group.scale.setScalar(narrowK);
+      if (mobile && !c.fixedScale && c.z !== 0) {
+        const k = TEXT_Z / c.z;
+        c.group.position.set(c.xn * halfW(PLANE), y, TEXT_Z);
+        c.group.scale.setScalar(narrowK * k);
+      } else {
+        c.group.position.set(c.xn * halfW(-c.z || PLANE), y, c.z);
+        if (!c.fixedScale) c.group.scale.setScalar(narrowK);
+      }
       c.update(env);
     }
 
+    for (const rl of rideLights) {
+      if (rl.owner.group.visible) {
+        rl.at.getWorldPosition(lightPos);
+        rl.light.position.copy(lightPos);
+        if (rl.base) (rl.light as THREE.PointLight).distance = rl.base * rl.owner.group.scale.x;
+      } else {
+        rl.light.intensity = 0;
+      }
+    }
     renderer.render(scene, camera);
 
     const W = lastW, H = lastH;
@@ -422,6 +462,11 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
     const atFloor = floor !== null && camY - floor < 1;
     emitCallouts(atFloor ? cands : cands.slice(0, W < 640 ? 2 : 3), atFloor);
   };
+  // Prepare every creature's shaders now, so none freezes the scroll on first appearance.
+  creatures.forEach((c) => (c.group.visible = true));
+  try {
+    renderer.compile(scene, camera);
+  } catch {}
   frame();
 
   const onLost = (e: Event) => {
