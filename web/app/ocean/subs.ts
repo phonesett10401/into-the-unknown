@@ -189,18 +189,30 @@ export function floorFleet(p: Place): Creature {
     tags.push(tagAt(sub, SUB_NAMES[s.kind], 0, s.top, 0));
     return { sub, s, lift: s.lift };
   });
+  // Phones: distant, smaller subs placed around the edges, so the floor text and quiz stay clear.
+  const NARROW: Record<SubKind, { x: number; z: number; lift: number; k: number }> = {
+    challenger: { x: -4.6, z: -40, lift: 5, k: 0.45 },
+    trieste: { x: 5.2, z: -46, lift: 6.5, k: 0.4 },
+    limiting: { x: 3.8, z: -30, lift: 1.3, k: 0.5 },
+    fendouzhe: { x: -3.6, z: -32, lift: 1.2, k: 0.45 },
+    alvin: { x: 0, z: -30, lift: 1, k: 0.5 }, shinkai: { x: 0, z: -30, lift: 1, k: 0.5 },
+    jiaolong: { x: 0, z: -30, lift: 1, k: 0.5 }, nautile: { x: 0, z: -30, lift: 1, k: 0.5 },
+  };
   return {
     group,
     anchor: () => {
       const f = p.floorY();
       return f === null ? null : f - 5.5;
     },
-    xn: 0, z: 0, span: 30, tags,
+    xn: 0, z: 0, span: 30, tags, fixedScale: true,
     update(e) {
+      const narrow = e.halfW(40) < 12;
       const k = Math.min(1, e.halfW(40) / 30);
       subs.forEach((q, i) => {
-        const x = q.s.x * k;
-        q.sub.position.set(x, floorHeight(x, q.s.z) + q.lift + Math.sin(e.t * 0.35 + i) * 0.12, q.s.z);
+        const n = NARROW[q.s.kind];
+        const x = narrow ? n.x : q.s.x * k, z = narrow ? n.z : q.s.z, lift = narrow ? n.lift : q.lift;
+        q.sub.scale.setScalar(narrow ? n.k : 1);
+        q.sub.position.set(x, floorHeight(x, z) + lift + Math.sin(e.t * 0.35 + i) * 0.12, z);
       });
     },
   };

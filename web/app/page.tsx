@@ -122,7 +122,7 @@ export default function Page() {
 
   useEffect(() => {
     if (!toast) return;
-    const id = setTimeout(() => setToast(null), 6000);
+    const id = setTimeout(() => setToast(null), 3500);
     return () => clearTimeout(id);
   }, [toast]);
 
@@ -180,7 +180,7 @@ export default function Page() {
       <Callouts />
       <Hud />
 
-      <aside className="shelf" aria-label="Badges">
+      <Shelf>
         {zones.map((z, i) => {
           const state = badges & bit(i) ? "earned" : demo & bit(i) ? "skipped" : passed & bit(i) ? "paid" : "empty";
           return (
@@ -189,7 +189,7 @@ export default function Page() {
             </span>
           );
         })}
-      </aside>
+      </Shelf>
 
       {toast && (
         <div className="toast" role="status">
@@ -299,6 +299,15 @@ export default function Page() {
         </section>
       )}
     </main>
+  );
+}
+
+function Shelf({ children }: { children: React.ReactNode }) {
+  const depth = useDepth();
+  return (
+    <aside className={`shelf${depth >= MAX - 1 ? " at-floor" : ""}`} aria-label="Badges">
+      {children}
+    </aside>
   );
 }
 

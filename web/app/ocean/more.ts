@@ -453,7 +453,7 @@ export function abyssalPlain(p: Place, nautile: THREE.Object3D): Creature {
       walk: 2.5,
     },
     narrow: {
-      tripods: [[-4.3, -22, 1], [-5.4, -31, 1], [-3.9, -38, 1]],
+      tripods: [[-3.7, -30, 1.1], [-4.6, -37, 1.1], [-3.5, -44, 1.1]],
       pigs: pigs.map((_, i) => [-4.2 - (i % 3) * 0.9, -25 - i * 2.4, 1] as Spot),
       nautile: [-1.6, 2.2, -34, 0.38],
       walk: 0.6,
@@ -490,7 +490,7 @@ export function abyssalPlain(p: Place, nautile: THREE.Object3D): Creature {
   return {
     group, anchor: () => p.wy(5750), xn: 0, z: 0, span: 34, fixedScale: true,
     tags: [
-      tagAt(plain, "Tripod fish", tripods[0].position.x, tripods[0].position.y + 2.2, tripods[0].position.z),
+      tagAt(tripods[0], "Tripod fish", 0, 2.2, 0),
       tagAt(pigs[0].pig, "Sea pig", 0, 0.9, 0),
       tagAt(nautile, "DSV Nautile", 0, 1.9, 0),
     ],

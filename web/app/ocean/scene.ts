@@ -463,7 +463,7 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
     }
     cands.sort((p1, p2) => p1.score - p2.score);
     const atFloor = floor !== null && camY - floor < 1;
-    emitCallouts(atFloor ? cands : cands.slice(0, W < 640 ? 2 : 3), atFloor);
+    emitCallouts(atFloor ? cands : cands.slice(0, 3), atFloor);
   };
   // Prepare every creature's shaders now, so none freezes the scroll on first appearance.
   creatures.forEach((c) => (c.group.visible = true));

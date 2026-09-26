@@ -463,3 +463,11 @@ button:focus-visible, a:focus-visible, select:focus-visible {
 }
 /* No text under 12px. */
 .slot { font-size: 0.75rem; }
+
+/* Phones: at the floor the badge row is already on screen, so the bar steps aside for the quiz. */
+.shelf { transition: opacity 0.25s; }
+@media (max-width: 700px) {
+  .shelf.at-floor { opacity: 0; visibility: hidden; }
+  /* Toasts sit under the depth readout instead of over the page's headings. */
+  .toast { font-size: 0.85rem; bottom: calc(64px + env(safe-area-inset-bottom)); }
+}
