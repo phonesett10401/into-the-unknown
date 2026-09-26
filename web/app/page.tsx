@@ -15,13 +15,17 @@ import {
   sendClear,
   sendSkip,
 } from "@/lib/chain";
-import Water, { WaterState } from "./Water";
+import { DEPTH_CURVE, dive, publish, useDepth, waterAt } from "@/lib/dive";
+import Ocean from "./Ocean";
 import ScaleColumn from "./ScaleColumn";
 
 const zones = zonesData.zones;
 const gates = quizData.gates;
 const milestones = buildingsData.milestones;
 const MAX = zonesData.maxDepth;
+
+// Local-only: open every zone to inspect the deep water. Ignored whenever a contract is configured.
+const PREVIEW_ALL = !hasContract && process.env.NEXT_PUBLIC_PREVIEW_ALL === "1";
 
 // Rotate each question's options so the answer is never always first.
 const ROTATE = [2, 0, 3, 1, 2];
@@ -31,26 +35,6 @@ function optionsFor(i: number) {
   return [...o.slice(o.length - r), ...o.slice(0, o.length - r)];
 }
 
-const COLOR_STOPS: [number, [number, number, number]][] = [
-  [0, [42, 143, 196]],
-  [200, [14, 77, 133]],
-  [1000, [6, 34, 74]],
-  [4000, [3, 13, 31]],
-  [6000, [1, 5, 13]],
-  [MAX, [0, 0, 0]],
-];
-function waterAt(d: number): [number, number, number] {
-  for (let i = 1; i < COLOR_STOPS.length; i++) {
-    const [d1, c1] = COLOR_STOPS[i];
-    const [d0, c0] = COLOR_STOPS[i - 1];
-    if (d <= d1) {
-      const t = (d - d0) / (d1 - d0);
-      return c0.map((v, k) => Math.round(v + (c1[k] - v) * t)) as [number, number, number];
-    }
-  }
-  return [0, 0, 0];
-}
-
 const bit = (i: number) => 1 << i;
 const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
 
@@ -58,49 +42,63 @@ type Stats = { cleared: number[]; skipped: number[] };
 type Toast = { text: string; hash?: string } | null;
 
 export default function Page() {
-  const [depth, setDepth] = useState(0);
-  const [passed, setPassed] = useState(0);
-  const [badges, setBadges] = useState(0);
+  const [passed, setPassed] = useState(PREVIEW_ALL ? 0b11111 : 0);
+  const [badges, setBadges] = useState(PREVIEW_ALL ? 0b10111 : 0);
   const [account, setAccount] = useState<string | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
   const [toast, setToast] = useState<Toast>(null);
   const sections = useRef<(HTMLElement | null)[]>([]);
   const floorRef = useRef<HTMLElement | null>(null);
-  const water = useRef<WaterState>({ depth: 0, travel: 0, rgb: COLOR_STOPS[0][1] });
 
   // First zone the diver has not passed; everything below it is not rendered.
   let frontier = 0;
   while (frontier < zones.length && passed & bit(frontier)) frontier++;
 
   // Scroll -> depth. Each zone gets equal scroll distance, so depth accelerates as you fall.
+  // Writes to the shared dive store; only the HUD and the ocean listen, so the page itself never re-renders on scroll.
   useEffect(() => {
     let raf = 0;
+    const measure = () => {
+      dive.zones = sections.current.flatMap((el, i) =>
+        el ? [{ top: el.offsetTop, height: el.offsetHeight, from: zones[i].from, to: zones[i].to }] : [],
+      );
+      dive.floorTop = floorRef.current ? floorRef.current.offsetTop : null;
+      dive.vh = window.innerHeight;
+    };
     const update = () => {
       raf = 0;
-      const mid = window.scrollY + window.innerHeight * 0.5;
+      dive.scrollY = window.scrollY;
+      const mid = dive.scrollY + dive.vh * 0.5;
       let d = 0;
-      sections.current.forEach((el, i) => {
-        if (!el) return;
-        const top = el.offsetTop;
-        if (mid < top) return;
-        const t = Math.min(1, (mid - top) / el.offsetHeight);
-        d = zones[i].from + (zones[i].to - zones[i].from) * Math.pow(t, 1.4);
-      });
-      if (floorRef.current && mid >= floorRef.current.offsetTop) d = MAX;
-      setDepth(d);
+      for (const z of dive.zones) {
+        if (mid < z.top) break;
+        const t = Math.min(1, (mid - z.top) / z.height);
+        d = z.from + (z.to - z.from) * Math.pow(t, DEPTH_CURVE);
+      }
+      if (dive.floorTop !== null && mid >= dive.floorTop) d = MAX;
+      dive.depth = d;
       const rgb = waterAt(d);
-      water.current = { depth: d, travel: window.scrollY, rgb };
-      document.body.style.background = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+      document.body.style.backgroundColor = `rgb(${rgb.map(Math.round).join(",")})`;
+      publish();
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
+    const onResize = () => {
+      measure();
+      onScroll();
+    };
+    measure();
     update();
+    document.documentElement.classList.add("sc-ready");
+    const ro = new ResizeObserver(onResize);
+    ro.observe(document.body);
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onResize);
     return () => {
+      ro.disconnect();
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
       if (raf) cancelAnimationFrame(raf);
     };
   }, [frontier]);
@@ -139,7 +137,7 @@ export default function Page() {
       setPassed((p) => p | bit(i));
       setBadges((b) => b | bit(i));
       setToast({
-        text: tx ? `${zones[i].name} badge earned · final in ${(tx.ms / 1000).toFixed(1)} s` : `${zones[i].name} badge earned`,
+        text: tx ? `${zones[i].name} badge earned. Final in ${(tx.ms / 1000).toFixed(1)} s` : `${zones[i].name} badge earned`,
         hash: tx?.hash,
       });
       refreshStats();
@@ -151,7 +149,7 @@ export default function Page() {
     (i: number, tx?: TxResult) => {
       setPassed((p) => p | bit(i));
       setToast({
-        text: tx ? `Paid past ${zones[i].name} · final in ${(tx.ms / 1000).toFixed(1)} s` : `Paid past ${zones[i].name}`,
+        text: tx ? `Paid past ${zones[i].name}. Final in ${(tx.ms / 1000).toFixed(1)} s` : `Paid past ${zones[i].name}`,
         hash: tx?.hash,
       });
       refreshStats();
@@ -159,21 +157,11 @@ export default function Page() {
     [refreshStats],
   );
 
-  const zoneNow = zones.find((z) => depth <= z.to) ?? zones[zones.length - 1];
-  const milestone = [...milestones].reverse().find((m) => depth >= m.depth - 1);
-
   return (
     <main>
-      <Water state={water} />
-      <ScaleColumn depth={depth} />
-      <header className="hud">
-        <div className="readout">
-          <div className="depth">{fmt(depth)} m</div>
-          <div className="zone-name">{depth < 1 ? "The surface" : zoneNow.name}</div>
-          <div className="pressure">{fmt(1 + depth / 10)} atm</div>
-        </div>
-        {milestone && <div className="milestone">{milestone.line}</div>}
-      </header>
+      <Ocean />
+      <ScaleColumn />
+      <Hud />
 
       <aside className="shelf" aria-label="Badges">
         {zones.map((z, i) => {
@@ -187,7 +175,7 @@ export default function Page() {
       </aside>
 
       {toast && (
-        <div className="toast">
+        <div className="toast" role="status">
           {toast.text}
           {toast.hash && (
             <a href={`${EXPLORER}/tx/${toast.hash}`} target="_blank" rel="noreferrer">
@@ -197,34 +185,35 @@ export default function Page() {
         </div>
       )}
 
-      <section className="surface">
-        <p className="kicker">Avalanche · Fuji</p>
-        <h1>Into The Unknown</h1>
-        <p className="lede">
-          The ocean is {fmt(MAX)} metres deep. Scroll to fall through it.
+      <section className="surface" data-sc-act="flow">
+        <h1 data-sc-cue>Into The Unknown</h1>
+        <p className="lede" data-sc-cue>
+          The ocean is {fmt(MAX)} metres deep. Fall through it.
         </p>
-        <p className="rule">Money buys time. Only knowledge buys the badge.</p>
-        <p className="hint">scroll ↓</p>
+        <p className="rule" data-sc-cue>
+          Money buys time. Only knowledge buys the badge.
+        </p>
       </section>
 
       {zones.slice(0, Math.min(frontier + 1, zones.length)).map((z, i) => (
         <section
           key={z.id}
-          className="zone"
+          className={`zone ${i % 2 ? "trail" : "lead"}`}
+          data-sc-act="flow"
           ref={(el) => {
             sections.current[i] = el;
           }}
         >
-          <div className="block">
-            <p className="kicker">
-              {z.scientific} · {fmt(z.from)}–{fmt(z.to)} m
-            </p>
+          <div className="block" data-sc-cue>
             <h2>{z.name}</h2>
+            <p className="meta">
+              {z.scientific}, {fmt(z.from)} to {fmt(z.to)} m
+            </p>
             <p className="lede">{z.blurb}</p>
             <p className="light">{z.light}</p>
           </div>
 
-          <ul className="block facts">
+          <ul className="block facts" data-sc-cue>
             {z.facts.map((f) => (
               <li key={f}>{f}</li>
             ))}
@@ -232,12 +221,11 @@ export default function Page() {
 
           <div className="block cards">
             {z.creatures.map((c) => (
-              <article key={c.name} className="card">
-                <p className="kicker">
-                  {fmt(c.from)}–{fmt(c.to)} m
-                </p>
+              <article key={c.name} className="card" data-sc-cue>
                 <h3>{c.name}</h3>
-                <p className="sci">{c.scientific}</p>
+                <p className="sci">
+                  {c.scientific}, {fmt(c.from)} to {fmt(c.to)} m
+                </p>
                 <p>{c.note}</p>
               </article>
             ))}
@@ -245,20 +233,20 @@ export default function Page() {
 
           <div className="block cards">
             {z.vessels.map((v) => (
-              <article key={v.name} className="card vessel">
-                <p className="kicker">
-                  {fmt(v.depth)} m{v.year ? ` · ${v.year}` : ""}
-                  {v.nation !== "-" ? ` · ${v.nation}` : ""}
-                </p>
+              <article key={v.name} className="card vessel" data-sc-cue>
                 <h3>{v.name}</h3>
+                <p className="sci">
+                  {fmt(v.depth)} m{v.year ? `, ${v.year}` : ""}
+                  {v.nation !== "-" ? `, ${v.nation}` : ""}
+                </p>
                 <p>{v.note}</p>
               </article>
             ))}
           </div>
 
-          <div className="block landmark">
-            <p className="kicker">{fmt(z.landmarkDepth)} m</p>
+          <div className="block landmark" data-sc-cue>
             <h3>{z.landmark}</h3>
+            <p className="meta">{fmt(z.landmarkDepth)} m</p>
           </div>
 
           {!(passed & bit(i)) && (
@@ -275,9 +263,11 @@ export default function Page() {
       ))}
 
       {frontier >= zones.length && (
-        <section className="floor" ref={floorRef}>
-          <p className="kicker">Challenger Deep · {fmt(MAX)} m</p>
-          <h2>You reached the bottom.</h2>
+        <section className="floor" data-sc-act="flow" ref={floorRef}>
+          <h2 data-sc-cue>You reached the bottom.</h2>
+          <p className="meta" data-sc-cue>
+            Challenger Deep, {fmt(MAX)} m
+          </p>
           <div className="collection">
             {zones.map((z, i) => {
               const earned = !!(badges & bit(i));
@@ -315,11 +305,27 @@ export default function Page() {
   );
 }
 
+function Hud() {
+  const depth = useDepth();
+  const zoneNow = zones.find((z) => depth <= z.to) ?? zones[zones.length - 1];
+  const milestone = [...milestones].reverse().find((m) => depth >= m.depth - 1);
+  return (
+    <header className="hud" data-sc-verify-state={depth}>
+      <div className="readout">
+        <div className="depth">{fmt(depth)} m</div>
+        <div className="zone-name">{depth < 1 ? "The surface" : zoneNow.name}</div>
+        <div className="pressure">{fmt(1 + depth / 10)} atm</div>
+      </div>
+      {milestone && depth < MAX && <div className="milestone">{milestone.line}</div>}
+    </header>
+  );
+}
+
 function FloorVerdict({ paid }: { paid: number }) {
   if (paid === 0) return <p className="verdict">Every badge earned. You read the whole ocean.</p>;
   const words = ["", "one zone", "two zones", "three zones", "four zones", "all five zones"];
   return (
-    <p className="verdict">
+    <p className="verdict" data-sc-cue>
       You paid your way past {words[paid]}. <span>Go back and earn {paid === 1 ? "it" : "them"}.</span>
     </p>
   );
@@ -384,9 +390,9 @@ function Gate(props: {
   const skipped = stats?.skipped[i] ?? null;
 
   return (
-    <div className="gate" role="group" aria-label={`Gate at ${fmt(g.depth)} metres`}>
-      <p className="kicker">
-        {fmt(g.depth)} m · {allowSkip ? "you cannot go deeper yet" : `earn the ${zones[i].name} badge`}
+    <div className="gate" role="group" aria-label={`Gate at ${fmt(g.depth)} metres`} data-sc-cue>
+      <p className="meta">
+        {fmt(g.depth)} m. {allowSkip ? "You cannot go deeper yet." : `Earn the ${zones[i].name.replace(/^The /, "")} badge.`}
       </p>
       <h3>{g.question}</h3>
       <div className="options">
@@ -404,7 +410,7 @@ function Gate(props: {
       )}
       {cleared !== null && skipped !== null && (
         <p className="count">
-          {cleared} {cleared === 1 ? "diver has" : "divers have"} earned this badge · {skipped} paid to skip
+          {cleared} {cleared === 1 ? "diver has" : "divers have"} earned this badge, {skipped} paid to skip
         </p>
       )}
     </div>

@@ -19,7 +19,7 @@ body {
   margin: 0;
   color: var(--ink);
   font-family: var(--sans);
-  background: rgb(42, 143, 196);
+  background: rgb(30, 108, 156);
   transition: background 0.15s linear;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
@@ -129,28 +129,40 @@ p { line-height: 1.6; }
 
 /* Sections */
 section { padding: 0 16px; }
+main > section { position: relative; z-index: 1; }
+h1, h2, h3, p, li { text-shadow: 0 1px 2px rgba(0, 8, 20, 0.55), 0 2px 14px rgba(0, 8, 20, 0.45); }
+
 .surface {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  max-width: 900px;
+  justify-content: flex-end;
+  padding-bottom: 18vh;
+  max-width: 1100px;
   margin: 0 auto;
+  padding-left: max(24px, 6vw);
 }
-.surface .lede { font-size: 1.25rem; color: var(--ink-soft); max-width: 36ch; }
-.surface .rule { font-family: var(--mono); color: var(--gold); font-size: 0.95rem; }
-.hint { font-family: var(--mono); color: var(--ink-faint); margin-top: 3rem; animation: bob 2s ease-in-out infinite; }
-@keyframes bob { 50% { transform: translateY(8px); } }
+.surface h1 { max-width: 9ch; }
+.surface .lede { font-size: 1.3rem; color: var(--ink); max-width: 30ch; margin: 1.2rem 0 0.4rem; }
+.surface .rule { font-family: var(--mono); color: #ffe6ad; font-size: 0.95rem; }
 
 .zone {
-  max-width: 760px;
-  margin: 0 auto;
-  padding-top: 14vh;
-  padding-bottom: 20vh;
+  max-width: 600px;
+  padding-top: 16vh;
+  padding-bottom: 22vh;
 }
-.block { margin: 0 0 16vh; }
+.zone.lead { margin: 0 auto 0 max(170px, 9vw); }
+.zone.trail { margin: 0 max(24px, 9vw) 0 auto; }
+.block { margin: 0 0 18vh; }
 .zone .lede { font-size: 1.2rem; color: var(--ink); max-width: 44ch; }
 .light { color: var(--ink-soft); font-style: italic; max-width: 50ch; }
+.meta {
+  margin: 0.5rem 0 1rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
 
 .facts { list-style: none; padding: 0; }
 .facts li {
@@ -165,7 +177,8 @@ section { padding: 0 16px; }
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(2, 14, 30, 0.42);
+  backdrop-filter: blur(6px);
 }
 .card p { margin: 0.4rem 0 0; color: var(--ink-soft); font-size: 0.95rem; }
 .card .sci { font-style: italic; color: var(--ink-faint); margin-top: 2px; }
@@ -177,11 +190,13 @@ section { padding: 0 16px; }
 .gate {
   margin: 10vh 0 30vh;
   padding: 24px;
-  border: 1px solid var(--glow);
+  border: 1px solid rgba(127, 227, 255, 0.5);
   border-radius: 16px;
-  background: rgba(0, 10, 25, 0.8);
-  box-shadow: 0 0 60px rgba(127, 227, 255, 0.15);
+  background: rgba(0, 10, 25, 0.82);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
 }
+.gate .meta { color: var(--glow); margin-top: 0; }
 .gate h3 { font-size: 1.35rem; margin-bottom: 16px; }
 .options { display: grid; gap: 10px; }
 .options button {
@@ -276,18 +291,18 @@ section { padding: 0 16px; }
   body { transition: none; }
 }
 
-/* WebGL water */
-.water {
+/* 3D ocean */
+.ocean {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
   z-index: 0;
   opacity: 0;
-  transition: opacity 0.8s ease;
+  transition: opacity 1.2s ease;
   pointer-events: none;
 }
-main > section { position: relative; z-index: 1; }
+.ocean.live { opacity: 1; }
 
 /* Building scale column */
 .scale {
@@ -360,4 +375,26 @@ main > section { position: relative; z-index: 1; }
 @media (max-width: 640px) {
   .scale { top: 10px; left: 10px; }
   .scale-pick select { max-width: 104px; }
+}
+
+/* Scrim only where the hero text sits, over the bright surface. */
+.surface::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 6vh;
+  width: min(980px, 90vw);
+  height: 62vh;
+  background: radial-gradient(ellipse 60% 55% at 32% 62%, rgba(0, 22, 48, 0.42), transparent 72%);
+  z-index: -1;
+  pointer-events: none;
+}
+.scale { width: 150px; }
+@media (max-width: 1100px) { .scale { width: auto; } }
+@media (max-width: 1100px) {
+  .zone.lead, .zone.trail { margin: 0 auto; }
+}
+@media (max-width: 640px) {
+  .zone { padding-top: 12vh; }
+  .surface { padding-left: 20px; padding-bottom: 14vh; }
 }
