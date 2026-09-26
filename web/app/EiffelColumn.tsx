@@ -8,9 +8,12 @@ const DIVER_M = 2.3; // a 1.8 m diver plus fins
 const SLOTS = 3;
 const TOTAL = Math.ceil(10935 / TOWER_M);
 
-// Half-width of the tower (in its 130-unit-wide drawing) at a given height in the 330-unit drawing.
+// The image is cropped antenna tip to feet; ASPECT is its width over height.
+const ASPECT = 371 / 695;
+// Half-width of the tower, measured from the image, in units where the tower is 330 tall.
 const PROFILE: [number, number][] = [
-  [0, 1], [30, 3], [50, 7.5], [56, 5], [120, 9], [180, 14], [207, 24], [216, 24], [266, 30], [276, 37], [300, 49], [330, 63],
+  [0, 1], [15, 1], [30, 9.5], [60, 9], [90, 11.4], [120, 13.3], [150, 16.6], [180, 21.4], [195, 30.9], [225, 35.6],
+  [240, 41.8], [255, 55], [270, 57], [285, 66], [300, 75.5], [315, 85.5], [330, 88],
 ];
 function halfWidth(y: number) {
   for (let i = 1; i < PROFILE.length; i++) {
@@ -18,7 +21,7 @@ function halfWidth(y: number) {
     const [y0, w0] = PROFILE[i - 1];
     if (y <= y1) return w0 + ((w1 - w0) * (y - y0)) / (y1 - y0);
   }
-  return 63;
+  return 88;
 }
 
 /**
@@ -36,7 +39,7 @@ export default function EiffelColumn() {
       const vh = dive.vh, vw = window.innerWidth;
       const px = vh * 2.6;
       const ppm = px / TOWER_M;
-      const w = (px * 130) / 330;
+      const w = px * ASPECT;
       const cx = vw < 640 ? vw * 0.1 : vw * 0.09;
       const d = dive.depth;
       const first = Math.floor(d / TOWER_M) - 1;
@@ -56,7 +59,7 @@ export default function EiffelColumn() {
       }
       if (diver.current) {
         const within = ((d % TOWER_M) + TOWER_M) % TOWER_M;
-        const edge = (halfWidth((within / TOWER_M) * 330) / 130) * w;
+        const edge = (halfWidth((within / TOWER_M) * 330) / 330) * px;
         diver.current.style.transform = `translate3d(${cx + Math.min(edge, 44) + 8}px, ${vh / 2}px, 0)`;
         diver.current.style.setProperty("--diver-h", `${Math.max(4, DIVER_M * ppm)}px`);
       }
@@ -89,7 +92,7 @@ export default function EiffelColumn() {
             towers.current[i] = el;
           }}
           className="tower-img"
-          src="/eiffel.svg"
+          src="/eiffel.webp"
           alt=""
           draggable={false}
         />
