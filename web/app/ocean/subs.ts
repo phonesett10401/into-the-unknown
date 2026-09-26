@@ -19,7 +19,8 @@ export const SUB_NAMES: Record<SubKind, string> = {
 const mats = new Map<string, THREE.MeshStandardMaterial>();
 function mat(color: number, rough = 0.45, metal = 0.1) {
   const k = `${color}-${rough}-${metal}`;
-  if (!mats.has(k)) mats.set(k, new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: metal }));
+  // A faint self-glow, as if lit by their own lamps, so hulls read in the dark.
+  if (!mats.has(k)) mats.set(k, new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: metal, emissive: color, emissiveIntensity: 0.16 }));
   return mats.get(k)!;
 }
 

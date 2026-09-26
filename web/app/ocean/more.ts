@@ -365,13 +365,22 @@ export function abyssalPlain(p: Place, nautile: THREE.Object3D): Creature {
   const sediment = std(0x5c5146, { roughness: 1, metalness: 0, side: THREE.DoubleSide });
   const ledge = new THREE.Mesh(top, sediment);
   ledge.position.set(-W / 2 - 3, -4, -60);
-  const cliffGeo = new THREE.PlaneGeometry(W, 45, 90, 30);
+  const CH = 70;
+  const cliffGeo = new THREE.PlaneGeometry(W, CH, 90, 40);
   const cp2 = cliffGeo.attributes.position;
   for (let i = 0; i < cp2.count; i++) cp2.setZ(i, (fbm(cp2.getX(i) * 0.06, cp2.getY(i) * 0.08 + 3, 4) - 0.5) * 4);
   cliffGeo.computeVertexNormals();
-  const cliff = new THREE.Mesh(cliffGeo, sediment);
+  // Fade the cliff to black toward its foot, so it has no visible bottom edge from the trench below.
+  const cc = new Float32Array(cp2.count * 3);
+  const sedCol = new THREE.Color(0x5c5146);
+  for (let i = 0; i < cp2.count; i++) {
+    const k = THREE.MathUtils.smoothstep((cp2.getY(i) + CH / 2) / CH, 0.05, 0.75);
+    cc[i * 3] = sedCol.r * k; cc[i * 3 + 1] = sedCol.g * k; cc[i * 3 + 2] = sedCol.b * k;
+  }
+  cliffGeo.setAttribute("color", new THREE.BufferAttribute(cc, 3));
+  const cliff = new THREE.Mesh(cliffGeo, std(0xffffff, { vertexColors: true, roughness: 1, metalness: 0, side: THREE.DoubleSide }));
   cliff.rotation.y = Math.PI / 2;
-  cliff.position.set(-3, -4 - 22.5, -60);
+  cliff.position.set(-3, -4 - CH / 2, -60);
 
   const g = (x: number, z: number) => ground(x, z) - 4;
   const tripodMat = std(0x3c4148, { roughness: 0.5, metalness: 0.25 });
