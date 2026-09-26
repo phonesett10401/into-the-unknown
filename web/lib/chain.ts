@@ -7,7 +7,7 @@ declare global {
   }
 }
 
-export const GATE_ADDRESS = process.env.NEXT_PUBLIC_GATE_ADDRESS ?? "";
+export const GATE_ADDRESS = process.env.NEXT_PUBLIC_GATE_ADDRESS || "0xd75564Df35299e5723D279157396bd7DB5C124f7";
 export const hasContract = /^0x[0-9a-fA-F]{40}$/.test(GATE_ADDRESS);
 
 const FUJI_ID = 43113;
