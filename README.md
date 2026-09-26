@@ -11,7 +11,7 @@ Consumer App track · Team1 Codebase Hackathon: Chula Edition · 26 September 20
 
 | | |
 |---|---|
-| Live | _Vercel URL_ |
+| Live | https://dive-into-the-unknown.vercel.app |
 | Contract | [`0xd75564Df35299e5723D279157396bd7DB5C124f7`](https://testnet.snowtrace.io/address/0xd75564Df35299e5723D279157396bd7DB5C124f7) on Avalanche Fuji (43113) |
 
 ## How it works
