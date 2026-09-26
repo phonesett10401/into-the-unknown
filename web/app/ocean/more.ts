@@ -356,17 +356,27 @@ export function cuviersWhale(p: Place, o: { depth: number; xn: number; z: number
  */
 export function abyssalPlain(p: Place, nautile: THREE.Object3D): Creature {
   const W = 150;
-  const top = new THREE.PlaneGeometry(W, W, 80, 80);
+  const D = 120; // depth of the ledge: from 14 m to 134 m in front of the camera
+  const ZC = -74;
+  const top = new THREE.PlaneGeometry(W, D, 80, 64);
   top.rotateX(-Math.PI / 2);
   const ground = (x: number, z: number) => (fbm(x * 0.05 + 7, z * 0.05, 4) - 0.5) * 2.2;
   const tp = top.attributes.position;
-  for (let i = 0; i < tp.count; i++) tp.setY(i, ground(tp.getX(i) - W / 2 - 3, tp.getZ(i) - 60));
+  for (let i = 0; i < tp.count; i++) tp.setY(i, ground(tp.getX(i) - W / 2 - 3, tp.getZ(i) + ZC));
   top.computeVertexNormals();
   const sediment = std(0x5c5146, { roughness: 1, metalness: 0, side: THREE.DoubleSide });
-  const ledge = new THREE.Mesh(top, sediment);
-  ledge.position.set(-W / 2 - 3, -4, -60);
+  // Fade the ledge to dark toward its near edge, so it has no hard front edge.
+  const lc = new Float32Array(tp.count * 3);
+  const sedC = new THREE.Color(0x5c5146);
+  for (let i = 0; i < tp.count; i++) {
+    const k = 1 - THREE.MathUtils.smoothstep(tp.getZ(i), D / 2 - 16, D / 2);
+    lc[i * 3] = sedC.r * k; lc[i * 3 + 1] = sedC.g * k; lc[i * 3 + 2] = sedC.b * k;
+  }
+  top.setAttribute("color", new THREE.BufferAttribute(lc, 3));
+  const ledge = new THREE.Mesh(top, std(0xffffff, { vertexColors: true, roughness: 1, metalness: 0, side: THREE.DoubleSide }));
+  ledge.position.set(-W / 2 - 3, -4, ZC);
   const CH = 70;
-  const cliffGeo = new THREE.PlaneGeometry(W, CH, 90, 40);
+  const cliffGeo = new THREE.PlaneGeometry(D, CH, 72, 40);
   const cp2 = cliffGeo.attributes.position;
   for (let i = 0; i < cp2.count; i++) cp2.setZ(i, (fbm(cp2.getX(i) * 0.06, cp2.getY(i) * 0.08 + 3, 4) - 0.5) * 4);
   cliffGeo.computeVertexNormals();
@@ -380,7 +390,7 @@ export function abyssalPlain(p: Place, nautile: THREE.Object3D): Creature {
   cliffGeo.setAttribute("color", new THREE.BufferAttribute(cc, 3));
   const cliff = new THREE.Mesh(cliffGeo, std(0xffffff, { vertexColors: true, roughness: 1, metalness: 0, side: THREE.DoubleSide }));
   cliff.rotation.y = Math.PI / 2;
-  cliff.position.set(-3, -4 - CH / 2, -60);
+  cliff.position.set(-3, -4 - CH / 2, ZC);
 
   const g = (x: number, z: number) => ground(x, z) - 4;
   const tripodMat = std(0x3c4148, { roughness: 0.5, metalness: 0.25 });
@@ -434,7 +444,42 @@ export function abyssalPlain(p: Place, nautile: THREE.Object3D): Creature {
     return { pig, base, ph: i * 1.3 };
   });
 
-  nautile.position.set(-12, -0.5, -18);
+  type Spot = [number, number, number]; // x, z, scale
+  const LAYOUT: Record<"wide" | "narrow", { tripods: Spot[]; pigs: Spot[]; nautile: [number, number, number, number]; walk: number }> = {
+    wide: {
+      tripods: [[-8, -14, 1], [-14, -21, 1], [-6.5, -25, 1]],
+      pigs: pigs.map((_, i) => [-10 - i * 2.2, -30 - (i % 2) * 3, 1] as Spot),
+      nautile: [-12, -0.5, -18, 1],
+      walk: 2.5,
+    },
+    narrow: {
+      tripods: [[-4.3, -22, 1.5], [-5.4, -31, 1.5], [-3.9, -38, 1.5]],
+      pigs: pigs.map((_, i) => [-4.2 - (i % 3) * 0.9, -25 - i * 2.4, 1.5] as Spot),
+      nautile: [-1.2, 2.2, -34, 0.55],
+      walk: 0.6,
+    },
+  };
+  let layout: "wide" | "narrow" | null = null;
+  let walk = 2.5, nautileY = -0.5;
+  const apply = (name: "wide" | "narrow") => {
+    const L = LAYOUT[name];
+    tripods.forEach((t, i) => {
+      const [x, z, k] = L.tripods[i];
+      t.position.set(x, g(x, z), z);
+      t.scale.setScalar(k);
+    });
+    pigs.forEach((q, i) => {
+      const [x, z, k] = L.pigs[i];
+      q.base.set(x, 0, z);
+      q.pig.scale.setScalar(k);
+    });
+    const [nx, ny, nz, nk] = L.nautile;
+    nautile.position.set(nx, ny, nz);
+    nautile.scale.setScalar(nk);
+    nautileY = ny;
+    walk = L.walk;
+    layout = name;
+  };
   nautile.rotation.y = 0.5;
 
   const group = new THREE.Group();
@@ -443,21 +488,22 @@ export function abyssalPlain(p: Place, nautile: THREE.Object3D): Creature {
   plain.add(ledge, cliff, ...tripods, ...pigs.map((q) => q.pig), nautile);
   group.add(plain);
   return {
-    group, anchor: () => p.wy(5750), xn: 0, z: 0, span: 34,
+    group, anchor: () => p.wy(5750), xn: 0, z: 0, span: 34, fixedScale: true,
     tags: [
       tagAt(plain, "Tripod fish", tripods[0].position.x, tripods[0].position.y + 2.2, tripods[0].position.z),
       tagAt(pigs[0].pig, "Sea pig", 0, 0.9, 0),
       tagAt(nautile, "DSV Nautile", 0, 1.9, 0),
     ],
     update(e) {
-      plain.position.x = e.halfW(20) < 12 ? 10 : 0;
+      const want = e.halfW(20) < 12 ? "narrow" : "wide";
+      if (want !== layout) apply(want);
       pigs.forEach((q) => {
-        const dx = Math.sin(e.t * 0.04 + q.ph) * 2.5;
+        const dx = Math.sin(e.t * 0.04 + q.ph) * walk;
         const x = q.base.x + dx, z = q.base.z;
         q.pig.position.set(x, g(x, z), z);
         q.pig.rotation.y = Math.cos(e.t * 0.04 + q.ph) >= 0 ? 0 : Math.PI;
       });
-      nautile.position.y = -0.5 + Math.sin(e.t * 0.4) * 0.2;
+      nautile.position.y = nautileY + Math.sin(e.t * 0.4) * 0.2;
     },
   };
 }
