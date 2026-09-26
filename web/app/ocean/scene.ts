@@ -281,9 +281,12 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
 
   // ---------- sizing ----------
   let aspect = 1;
+  // On narrow screens, shrink each creature together with its movement so it stays in view.
+  let narrowK = 1;
   const resize = () => {
     const w = window.innerWidth, h = window.innerHeight;
     aspect = w / h;
+    narrowK = aspect < 1 ? Math.max(0.5, aspect / 0.9) : 1;
     renderer.setSize(w, h, false);
     camera.aspect = aspect;
     camera.updateProjectionMatrix();
@@ -380,6 +383,7 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
       }
       c.group.visible = true;
       c.group.position.set(c.xn * halfW(-c.z || PLANE), y, c.z);
+      if (!c.fixedScale) c.group.scale.setScalar(narrowK);
       c.update(env);
     }
 

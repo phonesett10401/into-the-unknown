@@ -438,15 +438,19 @@ export function abyssalPlain(p: Place, nautile: THREE.Object3D): Creature {
   nautile.rotation.y = 0.5;
 
   const group = new THREE.Group();
-  group.add(ledge, cliff, ...tripods, ...pigs.map((q) => q.pig), nautile);
+  // Everything sits left of centre; on narrow screens the whole plain slides toward the middle.
+  const plain = new THREE.Group();
+  plain.add(ledge, cliff, ...tripods, ...pigs.map((q) => q.pig), nautile);
+  group.add(plain);
   return {
     group, anchor: () => p.wy(5750), xn: 0, z: 0, span: 34,
     tags: [
-      tagAt(group, "Tripod fish", tripods[0].position.x, tripods[0].position.y + 2.2, tripods[0].position.z),
+      tagAt(plain, "Tripod fish", tripods[0].position.x, tripods[0].position.y + 2.2, tripods[0].position.z),
       tagAt(pigs[0].pig, "Sea pig", 0, 0.9, 0),
       tagAt(nautile, "DSV Nautile", 0, 1.9, 0),
     ],
     update(e) {
+      plain.position.x = e.halfW(20) < 12 ? 10 : 0;
       pigs.forEach((q) => {
         const dx = Math.sin(e.t * 0.04 + q.ph) * 2.5;
         const x = q.base.x + dx, z = q.base.z;

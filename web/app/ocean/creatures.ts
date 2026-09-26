@@ -27,6 +27,7 @@ export type Creature = {
   span: number; // vertical half-extent, for visibility culling
   update: (e: Env) => void;
   tags?: Tag[]; // points the callout labels are drawn to
+  fixedScale?: boolean; // sizes itself to the screen; exempt from the narrow-screen shrink
 };
 
 export type Tag = { key: string; at: THREE.Object3D };
@@ -506,7 +507,7 @@ export function trenchWalls(p: Place): Creature {
       bottom = p.floorY() ?? a - H;
       return (top + bottom) / 2;
     },
-    xn: 0, z: 0, span: H / 2,
+    xn: 0, z: 0, span: H / 2, fixedScale: true,
     update(e) {
       const span = Math.max(40, top - bottom + 30);
       group.scale.y = span / H;
