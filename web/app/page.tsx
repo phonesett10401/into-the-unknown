@@ -15,6 +15,8 @@ import {
   sendClear,
   sendSkip,
 } from "@/lib/chain";
+import Water, { WaterState } from "./Water";
+import ScaleColumn from "./ScaleColumn";
 
 const zones = zonesData.zones;
 const gates = quizData.gates;
@@ -37,17 +39,16 @@ const COLOR_STOPS: [number, [number, number, number]][] = [
   [6000, [1, 5, 13]],
   [MAX, [0, 0, 0]],
 ];
-function waterAt(d: number) {
+function waterAt(d: number): [number, number, number] {
   for (let i = 1; i < COLOR_STOPS.length; i++) {
     const [d1, c1] = COLOR_STOPS[i];
     const [d0, c0] = COLOR_STOPS[i - 1];
     if (d <= d1) {
       const t = (d - d0) / (d1 - d0);
-      const c = c0.map((v, k) => Math.round(v + (c1[k] - v) * t));
-      return `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+      return c0.map((v, k) => Math.round(v + (c1[k] - v) * t)) as [number, number, number];
     }
   }
-  return "rgb(0, 0, 0)";
+  return [0, 0, 0];
 }
 
 const bit = (i: number) => 1 << i;
@@ -65,6 +66,7 @@ export default function Page() {
   const [toast, setToast] = useState<Toast>(null);
   const sections = useRef<(HTMLElement | null)[]>([]);
   const floorRef = useRef<HTMLElement | null>(null);
+  const water = useRef<WaterState>({ depth: 0, travel: 0, rgb: COLOR_STOPS[0][1] });
 
   // First zone the diver has not passed; everything below it is not rendered.
   let frontier = 0;
@@ -86,7 +88,9 @@ export default function Page() {
       });
       if (floorRef.current && mid >= floorRef.current.offsetTop) d = MAX;
       setDepth(d);
-      document.body.style.background = waterAt(d);
+      const rgb = waterAt(d);
+      water.current = { depth: d, travel: window.scrollY, rgb };
+      document.body.style.background = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -160,6 +164,8 @@ export default function Page() {
 
   return (
     <main>
+      <Water state={water} />
+      <ScaleColumn depth={depth} />
       <header className="hud">
         <div className="readout">
           <div className="depth">{fmt(depth)} m</div>

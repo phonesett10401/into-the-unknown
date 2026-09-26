@@ -275,3 +275,89 @@ section { padding: 0 16px; }
   .hint { animation: none; }
   body { transition: none; }
 }
+
+/* WebGL water */
+.water {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+}
+main > section { position: relative; z-index: 1; }
+
+/* Building scale column */
+.scale {
+  position: fixed;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 15;
+  width: 116px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.scale-pick span {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 4px;
+}
+.scale-pick select {
+  width: 100%;
+  padding: 5px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--glass);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.75rem;
+}
+.scale-pick option { color: #000; }
+.scale-track {
+  height: 52vh;
+  width: 36px;
+  margin-left: 10px;
+  border-top: 2px solid var(--glow);
+}
+.scale-fill { display: flex; flex-direction: column; overflow: hidden; }
+.tower { flex-shrink: 0; display: block; width: 100%; fill: rgba(234, 246, 255, 0.55); }
+.scale-count { margin: 0; font-size: 0.75rem; line-height: 1.3; color: var(--ink-soft); }
+.scale-count strong {
+  display: block;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.05rem;
+  color: var(--gold);
+}
+
+@media (max-width: 1100px) {
+  .scale {
+    top: 16px;
+    transform: none;
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--glass);
+    backdrop-filter: blur(8px);
+  }
+  .scale-track, .scale-pick span, .scale-count .nm { display: none; }
+  .scale-count { order: -1; }
+  .scale-count strong { font-size: 0.9rem; }
+  .scale-pick select { max-width: 150px; border: none; background: transparent; padding: 2px; }
+}
+@media (max-width: 640px) {
+  .scale { top: 10px; left: 10px; }
+  .scale-pick select { max-width: 104px; }
+}
