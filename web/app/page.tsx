@@ -278,27 +278,51 @@ export default function Page() {
             missed={zones.filter((_, i) => !(badges & bit(i))).length}
             paid={zones.filter((_, i) => !(badges & bit(i)) && !(demo & bit(i))).length}
           />
-          <div className="earn-back">
-            {zones.map((z, i) =>
-              badges & bit(i) ? null : (
-                <Gate
-                  key={z.id}
-                  index={i}
-                  stats={stats}
-                  ensureAccount={ensureAccount}
-                  onCleared={onCleared}
-                  onSkipped={onSkipped}
-                  allowSkip={false}
-                />
-              ),
+          <EarnBack
+            badges={badges}
+            render={(i) => (
+              <Gate
+                key={zones[i].id}
+                index={i}
+                stats={stats}
+                ensureAccount={ensureAccount}
+                onCleared={onCleared}
+                onSkipped={onSkipped}
+                allowSkip={false}
+              />
             )}
-          </div>
+          />
           <button className="again" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
             Back to the surface
           </button>
         </section>
       )}
     </main>
+  );
+}
+
+/** The floor's unearned badges, one quiz at a time. Earning one moves on to the next. */
+function EarnBack({ badges, render }: { badges: number; render: (i: number) => React.ReactNode }) {
+  const missing = zones.map((_, i) => i).filter((i) => !(badges & bit(i)));
+  const [pos, setPos] = useState(0);
+  if (!missing.length) return null;
+  const at = Math.min(pos, missing.length - 1);
+  const step = (d: number) => setPos((at + d + missing.length) % missing.length);
+  return (
+    <div className="earn-back">
+      <div className="earn-nav">
+        <button onClick={() => step(-1)} disabled={missing.length < 2} aria-label="Previous quiz">
+          ‹ Previous
+        </button>
+        <p aria-live="polite">
+          Earn it back · {at + 1} of {missing.length}
+        </p>
+        <button onClick={() => step(1)} disabled={missing.length < 2} aria-label="Next quiz">
+          Next ›
+        </button>
+      </div>
+      {render(missing[at])}
+    </div>
   );
 }
 
