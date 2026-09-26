@@ -5,6 +5,9 @@ import {
   Creature, Env, Place, anglerfish, baitBall, dumbo, jellyfish, lanternfish, seabed, siphonophore, snailfish, trenchWalls, whale,
 } from "./creatures";
 import { spermWhale, squid } from "./hunters";
+import { abyssalPlain, cuviersWhale, greatWhite, gulperEel, manOWar, nuclearSub, scubaDiver, vampireSquid } from "./more";
+import { buildSub, floorFleet, vessel } from "./subs";
+import { emitCallouts, type Callout } from "@/lib/callouts";
 
 const FOV = 50;
 const PLANE = 30; // distance at which the 3D world moves exactly with the page text
@@ -233,15 +236,28 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
   // ---------- creatures ----------
   const creatures: Creature[] = [
     baitBall(place),
+    manOWar(place),
+    scubaDiver(place, { depth: 40, xn: 0.35, z: -8, info: "Recreational scuba" }),
     whale(place),
-    jellyfish(place, { depth: 290, xn: -0.62, z: -24, size: 1.3, inner: 0x7b86e0, rim: 0xc6ecff, seed: 1 }),
+    greatWhite(place, { depth: 150, xn: 0.45, z: -20 }),
+    scubaDiver(place, { depth: 332, xn: -0.35, z: -8, info: "Ahmed Gabr", stageTanks: true }),
+    nuclearSub(place, { depth: 500, z: -42 }),
+    vampireSquid(place, { depth: 720, xn: -0.55, z: -10 }),
+    gulperEel(place, { depth: 2700, xn: 0.5, z: -16 }),
+    cuviersWhale(place, { depth: 3000, xn: 0.35, z: -24 }),
+    abyssalPlain(place, buildSub("nautile")),
+    vessel(place, { kind: "alvin", depth: 6450, xn: 0.55, z: -34, yaw: -0.5 }),
+    vessel(place, { kind: "shinkai", depth: 6750, xn: 0.3, z: -46, yaw: 0.6 }),
+    vessel(place, { kind: "jiaolong", depth: 7062, xn: 0.55, z: -36, yaw: -0.4 }),
+    floorFleet(place),
+    jellyfish(place, { depth: 290, xn: -0.62, z: -24, size: 1.3, inner: 0x7b86e0, rim: 0xc6ecff, seed: 1, info: "Jellyfish" }),
     jellyfish(place, { depth: 380, xn: -0.66, z: -16, size: 0.9, inner: 0xd08ac0, rim: 0xffd3f0, seed: 2.4 }),
     jellyfish(place, { depth: 470, xn: -0.2, z: -48, size: 1.6, inner: 0x6f8fe8, rim: 0xbfe6ff, seed: 4.1 }),
-    lanternfish(place, { depth: 610, xn: -0.5, z: -30, seed: 11 }),
-    jellyfish(place, { depth: 680, xn: -0.78, z: -12, size: 0.8, inner: 0x86a0ff, rim: 0xd7f3ff, seed: 5.3 }),
+    lanternfish(place, { depth: 610, xn: -0.5, z: -30, seed: 11, info: "Lanternfish" }),
+    jellyfish(place, { depth: 900, xn: -0.8, z: -40, size: 0.8, inner: 0x86a0ff, rim: 0xd7f3ff, seed: 5.3 }),
     squid(place, {
       depth: 800, xn: -0.42, z: -22, seed: 1.7, mantleLen: 2.3, mantleR: 0.36, finSpan: 0.45,
-      armLen: 2.9, armR: 0.085, tentLen: 7.5, eye: 0.19, color: 0xa9493c, tilt: 0.35, yaw: 0.5,
+      armLen: 2.9, armR: 0.085, tentLen: 7.5, eye: 0.19, color: 0xa9493c, tilt: 0.35, yaw: 0.5, info: "Giant squid",
     }),
     jellyfish(place, { depth: 960, xn: -0.7, z: -30, size: 1.2, inner: 0xc07ad8, rim: 0xf0d0ff, seed: 6.6 }),
     spermWhale(place, { depth: 1150, xn: 0.46, z: -32 }),
@@ -249,14 +265,14 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
     lanternfish(place, { depth: 1600, xn: 0.55, z: -34, seed: 23 }),
     squid(place, {
       depth: 1850, xn: 0.5, z: -20, seed: 4.2, mantleLen: 2.5, mantleR: 0.82, finSpan: 1.1,
-      armLen: 2.1, armR: 0.17, tentLen: 3.6, eye: 0.28, color: 0x96302c, tilt: -0.25, yaw: -0.45,
+      armLen: 2.1, armR: 0.17, tentLen: 3.6, eye: 0.28, color: 0x96302c, tilt: -0.25, yaw: -0.45, info: "Colossal squid",
     }),
     jellyfish(place, { depth: 2050, xn: -0.75, z: -45, size: 1.1, inner: 0x7a0f22, rim: 0x46a8ff, seed: 7.7 }),
     anglerfish(place, { depth: 2400, xn: 0.48, z: -15 }),
-    jellyfish(place, { depth: 3100, xn: 0.62, z: -20, size: 1.0, inner: 0x8a1428, rim: 0x3f9dff, seed: 9.1 }),
+    jellyfish(place, { depth: 3350, xn: 0.62, z: -20, size: 1.0, inner: 0x8a1428, rim: 0x3f9dff, seed: 9.1 }),
     dumbo(place, { depth: 4900, xn: -0.5, z: -20 }),
     trenchWalls(place),
-    snailfish(place, { depth: 7600, xn: 0.45, z: -18, seed: 0.5 }),
+    snailfish(place, { depth: 7600, xn: 0.45, z: -18, seed: 0.5, info: "Hadal snailfish" }),
     snailfish(place, { depth: 7900, xn: 0.5, z: -24, seed: 2.2 }),
     snailfish(place, { depth: 8200, xn: 0.3, z: -30, seed: 4.4 }),
     seabed(place),
@@ -289,6 +305,8 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
   let raf = 0;
   let slow = 0;
   const env: Env = { t: 0, dt: 0, camY: 0, light: 1, lamp: 0, fogDensity: 0.012, halfW };
+  const tagPos = new THREE.Vector3();
+  const cands: (Callout & { score: number })[] = [];
 
   const frame = () => {
     raf = requestAnimationFrame(frame);
@@ -366,6 +384,30 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
     }
 
     renderer.render(scene, camera);
+
+    const W = window.innerWidth, H = window.innerHeight;
+    cands.length = 0;
+    for (const c of creatures) {
+      if (!c.group.visible || !c.tags) continue;
+      for (const t of c.tags) {
+        t.at.getWorldPosition(tagPos);
+        const dist = tagPos.distanceTo(camera.position);
+        tagPos.project(camera);
+        if (tagPos.z > 1 || Math.abs(tagPos.x) > 0.94 || tagPos.y > 0.9 || tagPos.y < -0.8) continue;
+        const fogK = Math.exp(-Math.pow(fogD * dist, 2));
+        if (fogK < 0.15) continue;
+        const a = Math.min(1, ((tagPos.y > 0 ? 0.9 : 0.8) - Math.abs(tagPos.y)) / 0.12);
+        cands.push({
+          key: t.key,
+          x: ((tagPos.x + 1) / 2) * W,
+          y: ((1 - tagPos.y) / 2) * H,
+          a,
+          score: Math.abs(tagPos.y) + 0.3 * Math.abs(tagPos.x),
+        });
+      }
+    }
+    cands.sort((p1, p2) => p1.score - p2.score);
+    emitCallouts(cands.slice(0, W < 640 ? 2 : 3));
   };
   frame();
 
@@ -379,6 +421,7 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
   return {
     dispose() {
       cancelAnimationFrame(raf);
+      emitCallouts([]);
       window.removeEventListener("resize", resize);
       canvas.removeEventListener("webglcontextlost", onLost);
       renderer.dispose();

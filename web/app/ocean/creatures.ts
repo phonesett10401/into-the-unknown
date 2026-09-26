@@ -26,7 +26,24 @@ export type Creature = {
   z: number; // distance into the scene (negative)
   span: number; // vertical half-extent, for visibility culling
   update: (e: Env) => void;
+  tags?: Tag[]; // points the callout labels are drawn to
 };
+
+export type Tag = { key: string; at: THREE.Object3D };
+
+/** A labelled point riding on a part of a creature. */
+export function tagAt(parent: THREE.Object3D, key: string, x: number, y: number, z: number): Tag {
+  const at = new THREE.Object3D();
+  at.position.set(x, y, z);
+  parent.add(at);
+  return { key, at };
+}
+
+/** Height of the Challenger Deep floor at a world x/z (matches the seabed mesh). */
+export function floorHeight(x: number, zWorld: number) {
+  const z = zWorld + 150;
+  return (fbm(x * 0.035, z * 0.035, 5) - 0.5) * 4.5 + Math.sin(x * 0.55 + fbm(x * 0.1, z * 0.1, 2) * 6) * 0.12;
+}
 
 const dummy = new THREE.Object3D();
 dummy.rotation.order = "YZX";
@@ -53,6 +70,7 @@ export function baitBall(p: Place): Creature {
   const group = new THREE.Group();
   group.add(mesh);
   group.rotation.x = 0.45;
+  const tags = [tagAt(group, "Sardines", 0, 3.6, 0)];
   const R = rng(7);
   const fish = Array.from({ length: N }, () => {
     const h = (R() * 2 - 1) * 2.8;
@@ -60,7 +78,7 @@ export function baitBall(p: Place): Creature {
     return { h, r, ph: R() * Math.PI * 2, sp: 0.8 + R() * 0.4, wob: R() * 10 };
   });
   return {
-    group, anchor: () => p.heroY() - 1.5, xn: 0.5, z: -30, span: 6,
+    group, anchor: () => p.heroY() - 1.5, xn: 0.5, z: -30, span: 6, tags,
     update(e) {
       group.rotation.y = e.t * 0.05;
       for (let i = 0; i < N; i++) {
@@ -75,16 +93,16 @@ export function baitBall(p: Place): Creature {
   };
 }
 
-/** A humpback crossing far off, a silhouette softened by the water between you. */
+/** A blue whale crossing far off: long, slim, flat-headed, a silhouette softened by the water between you. */
 export function whale(p: Place): Creature {
   const body = latheBody(
     [
-      [0.05, -8], [0.28, -7.3], [0.55, -6], [0.95, -4], [1.35, -1.8], [1.55, 0.4],
-      [1.55, 2.4], [1.38, 4.4], [1.05, 6.1], [0.6, 7.4], [0.12, 8.1],
+      [0.06, -12], [0.3, -11], [0.6, -9], [1.05, -6], [1.45, -3], [1.65, 0], [1.65, 3],
+      [1.5, 6], [1.2, 8.5], [0.8, 10.5], [0.3, 11.7], [0.05, 12.1],
     ],
     28,
   );
-  body.scale(1, 0.86, 0.95);
+  body.scale(1, 0.8, 1);
   const fluke = new THREE.Shape();
   fluke.moveTo(0.4, 0);
   fluke.bezierCurveTo(-0.6, 0.6, -1.4, 2.2, -2.2, 2.9);
@@ -93,26 +111,31 @@ export function whale(p: Place): Creature {
   fluke.bezierCurveTo(-1.4, -2.2, -0.6, -0.6, 0.4, 0);
   const flukes = new THREE.ShapeGeometry(fluke, 10);
   flukes.rotateX(Math.PI / 2);
-  flukes.translate(-7.7, 0, 0);
+  flukes.scale(1.25, 1, 1.25);
+  flukes.translate(-11.6, 0, 0);
+  const dorsal = new THREE.ShapeGeometry(
+    new THREE.Shape([new THREE.Vector2(0.3, 0), new THREE.Vector2(-0.5, 0.55), new THREE.Vector2(-0.9, 0)]),
+  );
+  dorsal.translate(-7, 1.2, 0);
   const fins = [1, -1].map((s) => {
     const g = new THREE.SphereGeometry(1, 16, 8);
-    g.scale(2.7, 0.12, 0.42);
-    g.translate(-2.2, 0, 0);
-    g.rotateY(s * 0.55);
-    g.rotateX(s * 0.35);
-    g.translate(3.2, -0.75, s * 1.25);
+    g.scale(1.7, 0.1, 0.38);
+    g.translate(-1.4, 0, 0);
+    g.rotateY(s * 0.5);
+    g.rotateX(s * 0.3);
+    g.translate(5.5, -0.9, s * 1.3);
     return g;
   });
-  const geo = merge([body, flukes, ...fins]);
-  const mat = swim(new THREE.MeshStandardMaterial({ color: 0x26343f, roughness: 0.8, metalness: 0.05, side: THREE.DoubleSide }), {
-    amp: 0.35, freq: 0.32, speed: 1.1, head: 3, tail: -8, axis: "y",
+  const geo = merge([body, flukes, dorsal, ...fins]);
+  const mat = swim(new THREE.MeshStandardMaterial({ color: 0x3b5364, roughness: 0.75, metalness: 0.05, side: THREE.DoubleSide }), {
+    amp: 0.35, freq: 0.24, speed: 1.0, head: 4, tail: -12, axis: "y",
   });
   const mesh = new THREE.Mesh(geo, mat);
-  mesh.scale.setScalar(1.35);
+  const tags = [tagAt(mesh, "Blue whale", 2, 1.6, 0)];
   const group = new THREE.Group();
   group.add(mesh);
   return {
-    group, anchor: () => p.wy(95), xn: 0, z: -66, span: 16,
+    group, anchor: () => p.wy(95), xn: 0, z: -66, span: 16, tags,
     update(e) {
       mesh.position.x = ((e.t * 1.8 + 95) % 230) - 115;
       mesh.position.y = Math.sin(e.t * 0.3) * 0.9;
@@ -123,7 +146,7 @@ export function whale(p: Place): Creature {
 
 // ---------------------------------------------------------------- twilight
 
-export function jellyfish(p: Place, o: { depth: number; xn: number; z: number; size: number; inner: number; rim: number; seed: number }): Creature {
+export function jellyfish(p: Place, o: { depth: number; xn: number; z: number; size: number; inner: number; rim: number; seed: number; info?: string }): Creature {
   const bellGeo = new THREE.SphereGeometry(1, 40, 18, 0, Math.PI * 2, 0, Math.PI * 0.55);
   const bellMat = jellyMaterial(new THREE.Color(o.inner), new THREE.Color(o.rim));
   const bell = new THREE.Mesh(bellGeo, bellMat);
@@ -145,6 +168,7 @@ export function jellyfish(p: Place, o: { depth: number; xn: number; z: number; s
   const len = 5.5;
   return {
     group, anchor: () => p.wy(o.depth), xn: o.xn, z: o.z, span: 4 + len * o.size,
+    tags: o.info ? [tagAt(body, o.info, 0, 1.1, 0)] : undefined,
     update(e) {
       const ph = e.t * 1.5 + o.seed;
       const c = Math.pow(Math.max(0, Math.sin(ph)), 2);
@@ -178,7 +202,7 @@ export function jellyfish(p: Place, o: { depth: number; xn: number; z: number; s
 }
 
 /** A milling school of lanternfish, each with a light on its flank. */
-export function lanternfish(p: Place, o: { depth: number; xn: number; z: number; seed: number }): Creature {
+export function lanternfish(p: Place, o: { depth: number; xn: number; z: number; seed: number; info?: string }): Creature {
   const N = 90;
   const geo = fishGeometry();
   geo.scale(0.7, 0.7, 0.7);
@@ -205,8 +229,11 @@ export function lanternfish(p: Place, o: { depth: number; xn: number; z: number;
     sp: 0.1 + R() * 0.03, blink: R() * 20, wob: R() * 6,
   }));
   const tmp = new THREE.Vector3();
+  const tagObj = new THREE.Object3D();
+  group.add(tagObj);
   return {
     group, anchor: () => p.wy(o.depth), xn: o.xn, z: o.z, span: 8,
+    tags: o.info ? [{ key: o.info, at: tagObj }] : undefined,
     update(e) {
       const bright = 0.35 + 0.8 * (1 - e.light);
       for (let i = 0; i < N; i++) {
@@ -216,6 +243,7 @@ export function lanternfish(p: Place, o: { depth: number; xn: number; z: number;
         const y = f.oy + Math.sin(e.t * 0.6 + f.wob) * 0.35;
         const m = orient(x, y, z, -Math.sin(a) * 9, Math.cos(e.t * 0.6 + f.wob) * 0.2, Math.cos(a) * 4);
         mesh.setMatrixAt(i, m);
+        if (i === 0) tagObj.position.set(x, y + 0.4, z);
         tmp.set(0.08, -0.05, 0.1).applyMatrix4(m);
         dots[i * 3] = tmp.x; dots[i * 3 + 1] = tmp.y; dots[i * 3 + 2] = tmp.z;
         const b = bright * (0.55 + 0.45 * Math.pow(0.5 + 0.5 * Math.sin(e.t * 1.7 + f.blink), 6));
@@ -243,6 +271,7 @@ export function siphonophore(p: Place, o: { depth: number; xn: number; z: number
   const L = 22;
   return {
     group, anchor: () => p.wy(o.depth), xn: o.xn, z: o.z, span: 12,
+    tags: [tagAt(group, "Siphonophore", -L / 2 + 1.5, 1.2, 0)],
     update(e) {
       const fog = Math.exp(-Math.pow(e.fogDensity * -o.z, 2));
       const wave = (e.t * 0.22) % 1.3;
@@ -328,6 +357,7 @@ export function anglerfish(p: Place, o: { depth: number; xn: number; z: number }
   group.add(fish);
   return {
     group, anchor: () => p.wy(o.depth), xn: o.xn, z: o.z, span: 5,
+    tags: [tagAt(fish, "Anglerfish", 0.2, 1.3, 0)],
     update(e) {
       const flick = Math.sin(e.t * 13) > 0.97 ? 0.4 : 1;
       const pulse = (0.75 + 0.25 * Math.sin(e.t * 2.2)) * flick;
@@ -387,6 +417,7 @@ export function dumbo(p: Place, o: { depth: number; xn: number; z: number }): Cr
   group.add(octo);
   return {
     group, anchor: () => p.wy(o.depth), xn: o.xn, z: o.z, span: 4,
+    tags: [tagAt(octo, "Dumbo octopus", 0, 2.0, 0)],
     update(e) {
       const ph = e.t * 1.25;
       skirt.scale.set(1 + 0.14 * Math.sin(ph), 1 - 0.08 * Math.sin(ph), 1 + 0.14 * Math.sin(ph));
@@ -401,7 +432,7 @@ export function dumbo(p: Place, o: { depth: number; xn: number; z: number }): Cr
 // ---------------------------------------------------------------- hadal
 
 /** Pale, soft, slow: the deepest fish there is. */
-export function snailfish(p: Place, o: { depth: number; xn: number; z: number; seed: number }): Creature {
+export function snailfish(p: Place, o: { depth: number; xn: number; z: number; seed: number; info?: string }): Creature {
   const bodyGeo = latheBody(
     [[0.0, -1.7], [0.05, -1.5], [0.12, -1.1], [0.22, -0.55], [0.36, 0], [0.45, 0.35], [0.43, 0.62], [0.3, 0.84], [0.0, 0.95]],
     20,
@@ -437,6 +468,7 @@ export function snailfish(p: Place, o: { depth: number; xn: number; z: number; s
   group.add(mesh);
   return {
     group, anchor: () => p.wy(o.depth), xn: o.xn, z: o.z, span: 4,
+    tags: o.info ? [tagAt(mesh, o.info, 0.3, 0.7, 0)] : undefined,
     update(e) {
       const a = e.t * 0.09 + o.seed;
       mesh.position.set(Math.cos(a) * 3.5, Math.sin(e.t * 0.3 + o.seed) * 0.6, Math.sin(a) * 2);
@@ -511,6 +543,7 @@ export function seabed(p: Place): Creature {
   xenoGeo.computeVertexNormals();
   const X = 34;
   const xenos = new THREE.InstancedMesh(xenoGeo, new THREE.MeshStandardMaterial({ color: 0xd9ccb4, roughness: 0.9 }), X);
+  const firstXeno = new THREE.Vector3();
   const R = rng(99);
   for (let i = 0; i < X; i++) {
     const x = (R() * 2 - 1) * 26, z = -6 - R() * 40;
@@ -520,6 +553,7 @@ export function seabed(p: Place): Creature {
     dummy.scale.setScalar(s);
     dummy.updateMatrix();
     xenos.setMatrixAt(i, dummy.matrix);
+    if (i === 0) firstXeno.copy(dummy.position);
   }
   dummy.scale.set(1, 1, 1);
 
@@ -542,6 +576,10 @@ export function seabed(p: Place): Creature {
       return f === null ? null : f - 5.5;
     },
     xn: 0, z: 0, span: 30,
+    tags: [
+      tagAt(group, "Amphipod", bait.x, bait.y + 1.6, bait.z),
+      tagAt(group, "Xenophyophore", firstXeno.x, firstXeno.y + 0.4, firstXeno.z),
+    ],
     update(e) {
       for (let i = 0; i < A; i++) {
         const s = swarm[i];

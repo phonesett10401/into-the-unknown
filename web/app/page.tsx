@@ -18,6 +18,7 @@ import {
 import { DEPTH_CURVE, dive, publish, useDepth, waterAt } from "@/lib/dive";
 import Ocean from "./Ocean";
 import EiffelColumn from "./EiffelColumn";
+import Callouts from "./Callouts";
 
 const zones = zonesData.zones;
 const gates = quizData.gates;
@@ -169,6 +170,7 @@ export default function Page() {
     <main>
       <Ocean />
       <EiffelColumn />
+      <Callouts />
       <Hud />
 
       <aside className="shelf" aria-label="Badges">
@@ -226,31 +228,6 @@ export default function Page() {
               <li key={f}>{f}</li>
             ))}
           </ul>
-
-          <div className="block cards">
-            {z.creatures.map((c) => (
-              <article key={c.name} className="card" data-sc-cue>
-                <h3>{c.name}</h3>
-                <p className="sci">
-                  {c.scientific}, {fmt(c.from)} to {fmt(c.to)} m
-                </p>
-                <p>{c.note}</p>
-              </article>
-            ))}
-          </div>
-
-          <div className="block cards">
-            {z.vessels.map((v) => (
-              <article key={v.name} className="card vessel" data-sc-cue>
-                <h3>{v.name}</h3>
-                <p className="sci">
-                  {fmt(v.depth)} m{v.year ? `, ${v.year}` : ""}
-                  {v.nation !== "-" ? `, ${v.nation}` : ""}
-                </p>
-                <p>{v.note}</p>
-              </article>
-            ))}
-          </div>
 
           <div className="block landmark" data-sc-cue>
             <h3>{z.landmark}</h3>

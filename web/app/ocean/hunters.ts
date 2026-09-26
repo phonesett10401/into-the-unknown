@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { Creature, Place } from "./creatures";
+import { tagAt, type Creature, type Place } from "./creatures";
 import { fbm, latheBody, merge, swim } from "./util";
 
 /** A sperm whale diving head-first into the dark: box head, underslung jaw, wrinkled skin. */
@@ -57,6 +57,7 @@ export function spermWhale(p: Place, o: { depth: number; xn: number; z: number }
   group.add(whale);
   return {
     group, anchor: () => p.wy(o.depth), xn: o.xn, z: o.z, span: 16,
+    tags: [tagAt(whale, "Sperm whale", 2, 2.2, 0)],
     update(e) {
       const k = Math.sin(e.t * 0.035) * 6;
       whale.position.set(dir.x * k, dir.y * k, dir.z * k);
@@ -70,7 +71,7 @@ export function squid(
   o: {
     depth: number; xn: number; z: number; seed: number;
     mantleLen: number; mantleR: number; finSpan: number; armLen: number; armR: number; tentLen: number;
-    eye: number; color: number; tilt: number; yaw: number;
+    eye: number; color: number; tilt: number; yaw: number; info?: string;
   },
 ): Creature {
   const L = o.mantleLen, R = o.mantleR;
@@ -125,6 +126,7 @@ export function squid(
   group.add(squidBody);
   return {
     group, anchor: () => p.wy(o.depth), xn: o.xn, z: o.z, span: 4 + o.tentLen,
+    tags: o.info ? [tagAt(squidBody, o.info, L * 0.5, R + 0.15, 0)] : undefined,
     update(e) {
       const t = e.t;
       const pulse = Math.sin(t * 1.1 + o.seed);

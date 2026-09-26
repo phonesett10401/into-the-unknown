@@ -350,3 +350,42 @@ h1, h2, h3, p, li { text-shadow: 0 1px 2px rgba(0, 8, 20, 0.55), 0 2px 14px rgba
   .diver-tag { display: none; }
 }
 .skip.demo { margin-top: 6px; }
+
+/* Zones leave open water for the creatures; the gate sits at the zone floor. */
+.zone { display: flex; flex-direction: column; min-height: 330vh; }
+.zone .gate { margin-top: auto; }
+main > section { pointer-events: none; }
+main > section > * { pointer-events: auto; }
+
+/* Callouts: a line from a creature or vessel to its label */
+.callouts { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.callout-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.callout-lines line { stroke: rgba(234, 246, 255, 0.6); stroke-width: 1; opacity: 0; transition: opacity 0.3s; }
+.callout-lines circle { fill: var(--gold); opacity: 0; transition: opacity 0.3s; }
+.callout {
+  position: absolute; left: 0; top: 0; width: 250px;
+  padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px;
+  background: rgba(2, 14, 30, 0.74); backdrop-filter: blur(8px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  opacity: 0; pointer-events: none; transition: opacity 0.3s; will-change: transform;
+}
+.callout.on { pointer-events: auto; }
+.callout p { text-shadow: none; }
+.c-name { margin: 0; font-weight: 600; font-size: 0.98rem; }
+.c-meta { margin: 2px 0 6px; font-family: var(--mono); font-size: 0.68rem; color: var(--ink-faint); }
+.c-note {
+  margin: 0; font-size: 0.82rem; line-height: 1.45; color: var(--ink-soft);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.callout a { display: inline-block; margin-top: 8px; font-size: 0.8rem; color: var(--glow); text-decoration: none; }
+.callout a:hover { text-decoration: underline; }
+@media (max-width: 640px) {
+  .callouts { z-index: 2; }
+  .callout {
+    width: auto; max-width: 70vw; padding: 6px 12px; border-radius: 999px;
+    display: flex; align-items: center; gap: 10px; background: rgba(2, 14, 30, 0.88);
+  }
+  .c-meta, .c-note { display: none; }
+  .c-name { font-size: 0.82rem; white-space: nowrap; }
+  .callout a { margin: 0; font-size: 0.74rem; white-space: nowrap; }
+}
