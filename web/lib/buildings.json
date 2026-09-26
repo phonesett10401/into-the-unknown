@@ -1,0 +1,28 @@
+{
+  "_comment": "The scale column. Buildings fall away beside the diver; the UI stacks them to express depth. Bangkok entries are deliberate - the room is at Chulalongkorn, and a building the audience can see from the venue lands harder than one they cannot.",
+  "_usage": "Pick the tallest building whose height is <= current depth, and show floor(depth / height) stacked. Below ~1,000 m switch to the tallest entry only, or the column becomes absurd - which is the point, so say it in words instead: 'thirteen Mahanakhons'.",
+  "buildings": [
+    { "id": "liberty",    "name": "Statue of Liberty",        "city": "New York",  "height": 93,    "note": "Ground to torch." },
+    { "id": "bigben",     "name": "Big Ben",                  "city": "London",    "height": 96,    "note": "The tower, properly the Elizabeth Tower." },
+    { "id": "eiffel",     "name": "Eiffel Tower",             "city": "Paris",     "height": 330,   "note": "To the tip, including the antennas added in 2022." },
+    { "id": "baiyoke2",   "name": "Baiyoke Tower II",         "city": "Bangkok",   "height": 304,   "note": "Tallest in Bangkok from 1997 to 2016." },
+    { "id": "mahanakhon", "name": "King Power Mahanakhon",    "city": "Bangkok",   "height": 314,   "note": "314.2 m. The pixelated one. Visible from most of central Bangkok." },
+    { "id": "iconsiam",   "name": "Magnolias Waterfront",     "city": "Bangkok",   "height": 318,   "note": "317.95 m, at ICONSIAM. Currently the tallest building in Thailand." },
+    { "id": "empire",     "name": "Empire State Building",    "city": "New York",  "height": 443,   "note": "To the tip of the antenna; 381 m to the roof." },
+    { "id": "taipei101",  "name": "Taipei 101",               "city": "Taipei",    "height": 508,   "note": "Tallest in the world 2004 to 2010." },
+    { "id": "owtc",       "name": "One World Trade Center",   "city": "New York",  "height": 541,   "note": "541.3 m, a deliberate 1,776 feet." },
+    { "id": "shanghai",   "name": "Shanghai Tower",           "city": "Shanghai",  "height": 632,   "note": null },
+    { "id": "merdeka",    "name": "Merdeka 118",              "city": "Kuala Lumpur", "height": 679, "note": "678.9 m. The second tallest building in the world." },
+    { "id": "burj",       "name": "Burj Khalifa",             "city": "Dubai",     "height": 828,   "note": "The tallest building in the world. It takes four and a half of them, stacked, to reach the Titanic." }
+  ],
+  "milestones": [
+    { "depth": 200,   "line": "The continental shelf breaks here, and you are still not as deep as Mahanakhon is tall." },
+    { "depth": 332,   "line": "The deepest scuba dive ever made. Exactly one Eiffel Tower." },
+    { "depth": 828,   "line": "One Burj Khalifa below the surface, and there is no light left worth the name." },
+    { "depth": 2992,  "line": "The deepest dive by any mammal. Three and a half Burj Khalifas." },
+    { "depth": 3800,  "line": "The Titanic. Twelve Mahanakhons, stacked." },
+    { "depth": 6957,  "line": "The deepest octopus ever filmed. Eight Burj Khalifas." },
+    { "depth": 8336,  "line": "The deepest fish ever filmed. Below this, no fish at all." },
+    { "depth": 10935, "line": "The bottom. Thirteen Burj Khalifas, or thirty-five Mahanakhons, straight down." }
+  ]
+}

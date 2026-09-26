@@ -1,0 +1,102 @@
+{
+  "_comment": "One gate per zone. Every answer is findable in the content the diver just scrolled past - that is the whole point. The quiz tests whether you read the descent, which is what makes the badge worth more than the toll.",
+  "_salts": "Salts are placeholders. Generate real ones on the day (cast keccak or crypto.randomUUID) and set answerHash in the constructor. Never commit the real salts alongside the answers in a public repo - not that it saves you; see DESIGN.md, 'Known limitation'.",
+  "_hash": "answerHash[zone] = keccak256(abi.encodePacked(zone, answer, salt)) where answer is the exact option string.",
+  "gates": [
+    {
+      "zone": 0,
+      "depth": 200,
+      "question": "You are at 200 m, the floor of the sunlight zone. What stops here?",
+      "options": [
+        "Photosynthesis",
+        "Bioluminescence",
+        "Ocean currents",
+        "Saltwater"
+      ],
+      "answer": "Photosynthesis",
+      "salt": "PLACEHOLDER_SALT_0",
+      "because": "Below 200 m there is not enough light to grow anything. Everything deeper is eating what fell from above.",
+      "alternate": {
+        "question": "How deep was the deepest scuba dive ever recorded?",
+        "options": ["332 m", "40 m", "1,000 m", "2,992 m"],
+        "answer": "332 m"
+      }
+    },
+    {
+      "zone": 1,
+      "depth": 1000,
+      "question": "Roughly what share of animals in the twilight zone make their own light?",
+      "options": [
+        "About 90%",
+        "About 10%",
+        "About 50%",
+        "Almost none"
+      ],
+      "answer": "About 90%",
+      "salt": "PLACEHOLDER_SALT_1",
+      "because": "There is just enough light here to be seen by something hunting you, so nearly everything here has learned to control light of its own.",
+      "alternate": {
+        "question": "Every night, the animals of this zone do something that is the largest of its kind on Earth. What?",
+        "options": ["Migrate vertically toward the surface", "Change colour", "Spawn", "Descend to the seabed"],
+        "answer": "Migrate vertically toward the surface"
+      }
+    },
+    {
+      "zone": 2,
+      "depth": 4000,
+      "question": "You passed a wreck at 3,800 m. Which one?",
+      "options": [
+        "RMS Titanic",
+        "The Mary Rose",
+        "USS Arizona",
+        "The Vasa"
+      ],
+      "answer": "RMS Titanic",
+      "salt": "PLACEHOLDER_SALT_2",
+      "because": "The Titanic sits at about 3,800 m, roughly twelve King Power Mahanakhons below the surface.",
+      "alternate": {
+        "question": "What is the water temperature through most of the midnight zone?",
+        "options": ["About 4 degrees C", "Below freezing", "About 20 degrees C", "It varies with the season"],
+        "answer": "About 4 degrees C"
+      }
+    },
+    {
+      "zone": 3,
+      "depth": 6000,
+      "question": "What is marine snow?",
+      "options": [
+        "The falling remains of everything that died above",
+        "Frozen seawater",
+        "Volcanic ash from seafloor vents",
+        "Plankton that glows white"
+      ],
+      "answer": "The falling remains of everything that died above",
+      "salt": "PLACEHOLDER_SALT_3",
+      "because": "Nothing grows down here. Every meal on the abyssal plain fell from the sunlight zone, four kilometres up.",
+      "alternate": {
+        "question": "Abyssal plains cover more of the Earth's surface than what?",
+        "options": ["Every continent combined", "The Pacific Ocean", "Antarctica", "All the world's forests"],
+        "answer": "Every continent combined"
+      }
+    },
+    {
+      "zone": 4,
+      "depth": 10935,
+      "question": "The deepest fish ever filmed was recorded at 8,336 m. What happens below that?",
+      "options": [
+        "No fish at all - it is close to the physiological limit",
+        "Fish get larger",
+        "Fish lose their eyes",
+        "Nothing changes"
+      ],
+      "answer": "No fish at all - it is close to the physiological limit",
+      "salt": "PLACEHOLDER_SALT_4",
+      "because": "There appears to be a hard limit for fish near 8,200 to 8,400 m. The bottom 2,500 m of the ocean belongs to amphipods and single cells.",
+      "alternate": {
+        "question": "Who reached the bottom of the Challenger Deep first, and when?",
+        "options": ["Piccard and Walsh, 1960", "James Cameron, 2012", "Victor Vescovo, 2019", "The crew of Fendouzhe, 2020"],
+        "answer": "Piccard and Walsh, 1960"
+      }
+    }
+  ]
+}
