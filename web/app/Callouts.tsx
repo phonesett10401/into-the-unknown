@@ -15,34 +15,56 @@ export default function Callouts() {
   const cards = useRef<Record<string, HTMLDivElement | null>>({});
   const lines = useRef<Record<string, SVGLineElement | null>>({});
   const dots = useRef<Record<string, SVGCircleElement | null>>({});
+  const root = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let shown = new Set<string>();
-    return onCallouts((list) => {
+    type Box = { left: number; top: number; right: number; bottom: number };
+    // Everything a label must not cover: page text, gates, the floor's badges, and the fixed chrome.
+    let obstacleEls: Element[] = [];
+    let frame = 0;
+    const collect = () => {
+      obstacleEls = [...document.querySelectorAll("main > section > *, .hud .readout, .shelf, .eiffel-count, .toast")];
+    };
+    return onCallouts((list, compact) => {
+      root.current?.classList.toggle("compact", compact);
       const vw = window.innerWidth, vh = window.innerHeight;
-      const gap = vw < 640 ? 26 : 44;
-      const boxes: { top: number; bottom: number; left: number; right: number }[] = [];
+      if (frame++ % 30 === 0) collect();
+      const obstacles: Box[] = [];
+      for (const el of obstacleEls) {
+        const r = el.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > vh || r.width === 0) continue;
+        obstacles.push({ left: r.left - 8, top: r.top - 8, right: r.right + 8, bottom: r.bottom + 8 });
+      }
+      const gap = vw < 640 ? 22 : 44;
+      const placed: Box[] = [];
+      const hits = (x: number, y: number, w: number, h: number) =>
+        [...obstacles, ...placed].some((o) => x < o.right && x + w > o.left && y < o.bottom && y + h > o.top);
       const now = new Set<string>();
       for (const c of list) {
         const el = cards.current[c.key], ln = lines.current[c.key], dot = dots.current[c.key];
         if (!el || !ln || !dot) continue;
-        now.add(c.key);
         const w = el.offsetWidth, h = el.offsetHeight;
-        // Put the card on the outer side of the anchor, where the open water is.
-        let toRight = c.x > vw / 2;
-        if (toRight && c.x + gap + w > vw - 12) toRight = false;
-        if (!toRight && c.x - gap - w < 12) toRight = true;
-        let lx = toRight ? c.x + gap : c.x - gap - w;
-        let ly = c.y - h - gap;
-        if (ly < 76) ly = c.y + gap;
-        lx = Math.max(12, Math.min(vw - w - 12, lx));
-        ly = Math.max(76, Math.min(vh - h - 84, ly));
-        for (const b of boxes) {
-          const overlapX = lx < b.right + 8 && lx + w > b.left - 8;
-          const overlapY = ly < b.bottom + 8 && ly + h > b.top - 8;
-          if (overlapX && overlapY) ly = Math.min(vh - h - 84, b.bottom + 10);
+        // Try the outer side first (open water), above then below; then the inner side.
+        const outer = c.x > vw / 2 ? 1 : -1;
+        let spot: { x: number; y: number } | null = null;
+        for (const side of [outer, -outer]) {
+          for (const up of [true, false]) {
+            let x = side > 0 ? c.x + gap : c.x - gap - w;
+            let y = up ? c.y - h - gap : c.y + gap;
+            x = Math.max(12, Math.min(vw - w - 12, x));
+            y = Math.max(12, Math.min(vh - h - 12, y));
+            if (!hits(x, y, w, h)) {
+              spot = { x, y };
+              break;
+            }
+          }
+          if (spot) break;
         }
-        boxes.push({ top: ly, bottom: ly + h, left: lx, right: lx + w });
+        if (!spot) continue; // nowhere clear right now: skip rather than cover text
+        now.add(c.key);
+        const lx = spot.x, ly = spot.y;
+        placed.push({ left: lx - 8, top: ly - 8, right: lx + w + 8, bottom: ly + h + 8 });
         el.style.transform = `translate3d(${lx.toFixed(1)}px, ${ly.toFixed(1)}px, 0)`;
         el.style.opacity = c.a.toFixed(3);
         el.classList.add("on");
@@ -74,7 +96,7 @@ export default function Callouts() {
   }, []);
 
   return (
-    <div className="callouts">
+    <div className="callouts" ref={root}>
       <svg className="callout-lines" aria-hidden="true">
         {KEYS.map((k) => (
           <g key={k}>

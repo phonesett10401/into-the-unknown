@@ -173,10 +173,10 @@ export function vessel(p: Place, o: { kind: SubKind; depth: number; xn: number; 
 /** The four submersibles that reached the bottom, resting on the Challenger Deep. */
 export function floorFleet(p: Place): Creature {
   const spots: { kind: SubKind; x: number; z: number; lift: number; yaw: number; top: number }[] = [
-    { kind: "trieste", x: 15, z: -38, lift: 4.4, yaw: 0.5, top: 3.2 },
-    { kind: "challenger", x: -11, z: -26, lift: 4.1, yaw: 0.3, top: 4.2 },
-    { kind: "limiting", x: 7, z: -17, lift: 1.9, yaw: -0.6, top: 2.1 },
-    { kind: "fendouzhe", x: -21, z: -42, lift: 2.2, yaw: 0.9, top: 2.3 },
+    { kind: "trieste", x: 22, z: -38, lift: 4.4, yaw: 0.5, top: 3.2 },
+    { kind: "challenger", x: -15, z: -26, lift: 4.1, yaw: 0.3, top: 4.2 },
+    { kind: "limiting", x: 10.5, z: -17, lift: 1.9, yaw: -0.6, top: 2.1 },
+    { kind: "fendouzhe", x: -24, z: -44, lift: 2.2, yaw: 0.9, top: 2.3 },
   ];
   const group = new THREE.Group();
   const tags: Tag[] = [];
@@ -186,7 +186,7 @@ export function floorFleet(p: Place): Creature {
     sub.rotation.y = s.yaw;
     group.add(sub);
     tags.push(tagAt(sub, SUB_NAMES[s.kind], 0, s.top, 0));
-    return { sub, base: sub.position.y };
+    return { sub, s, lift: s.lift };
   });
   return {
     group,
@@ -196,7 +196,11 @@ export function floorFleet(p: Place): Creature {
     },
     xn: 0, z: 0, span: 30, tags,
     update(e) {
-      subs.forEach((s, i) => (s.sub.position.y = s.base + Math.sin(e.t * 0.35 + i) * 0.12));
+      const k = Math.min(1, e.halfW(40) / 30);
+      subs.forEach((q, i) => {
+        const x = q.s.x * k;
+        q.sub.position.set(x, floorHeight(x, q.s.z) + q.lift + Math.sin(e.t * 0.35 + i) * 0.12, q.s.z);
+      });
     },
   };
 }

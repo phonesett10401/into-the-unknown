@@ -553,7 +553,16 @@ export function seabed(p: Place): Creature {
     dummy.scale.setScalar(s);
     dummy.updateMatrix();
     xenos.setMatrixAt(i, dummy.matrix);
-    if (i === 0) firstXeno.copy(dummy.position);
+  }
+  {
+    // One xenophyophore placed deliberately in clear view, for its label.
+    const x = -7, z = -20, sc = 0.42;
+    dummy.position.set(x, height(x, z + S / 2 - 10) + sc * 0.35, z);
+    dummy.rotation.set(0.1, 1, 0.1);
+    dummy.scale.setScalar(sc);
+    dummy.updateMatrix();
+    xenos.setMatrixAt(0, dummy.matrix);
+    firstXeno.copy(dummy.position);
   }
   dummy.scale.set(1, 1, 1);
 
@@ -564,7 +573,7 @@ export function seabed(p: Place): Creature {
   const amphipods = new THREE.Points(aGeo, new THREE.PointsMaterial({ color: 0xf4efe4, size: 0.16, map: glowTexture(), sizeAttenuation: true, transparent: true, opacity: 0.75, depthWrite: false }));
   amphipods.frustumCulled = false;
   const swarm = Array.from({ length: A }, () => ({ r: R() * 2.2, a: R() * 6.283, h: R() * 1.6, sp: 0.6 + R() * 1.4, j: R() * 50 }));
-  const bait = new THREE.Vector3(5, 0, -13);
+  const bait = new THREE.Vector3(-8.5, 0, -15);
   bait.y = height(bait.x, bait.z + S / 2 - 10) + 0.6;
 
   const group = new THREE.Group();

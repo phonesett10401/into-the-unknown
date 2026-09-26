@@ -407,7 +407,8 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
       }
     }
     cands.sort((p1, p2) => p1.score - p2.score);
-    emitCallouts(cands.slice(0, W < 640 ? 2 : 3));
+    const atFloor = floor !== null && camY - floor < 1;
+    emitCallouts(atFloor ? cands : cands.slice(0, W < 640 ? 2 : 3), atFloor);
   };
   frame();
 

@@ -389,3 +389,12 @@ main > section > * { pointer-events: auto; }
   .c-name { font-size: 0.82rem; white-space: nowrap; }
   .callout a { margin: 0; font-size: 0.74rem; white-space: nowrap; }
 }
+
+/* At the floor every label shows, so they switch to compact pills. */
+.callouts.compact .callout {
+  width: auto; max-width: 70vw; padding: 6px 12px; border-radius: 999px;
+  display: flex; align-items: center; gap: 10px; background: rgba(2, 14, 30, 0.88);
+}
+.callouts.compact .c-meta, .callouts.compact .c-note { display: none; }
+.callouts.compact .c-name { font-size: 0.82rem; white-space: nowrap; }
+.callouts.compact .callout a { margin: 0; font-size: 0.74rem; white-space: nowrap; }
