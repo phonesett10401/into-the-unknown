@@ -48,7 +48,7 @@
       "creatures": [
         { "name": "Vampire squid", "scientific": "Vampyroteuthis infernalis", "from": 600, "to": 900, "note": "Neither a vampire nor a squid. It eats marine snow, and turns itself inside out when frightened." },
         { "name": "Lanternfish", "scientific": "Myctophidae", "from": 200, "to": 1000, "note": "Possibly the most abundant vertebrate on the planet. You have almost certainly never seen one." },
-        { "name": "Giant squid", "scientific": "Architeuthis dux", "from": 300, "to": 1000, "note": "Never filmed alive until 2012. It has the largest eye of any known animal, about the size of a dinner plate." }
+        { "name": "Giant squid", "scientific": "Architeuthis dux", "from": 300, "to": 1000, "note": "Never filmed alive until 2012. Its eyes reach about 27 cm across, matched only by the colossal squid." }
       ],
       "vessels": [
         { "name": "Nuclear submarine", "nation": "-", "year": null, "depth": 500, "note": "Crush depths are classified. Operating depth is believed to be a few hundred metres." },
@@ -75,6 +75,7 @@
       "creatures": [
         { "name": "Anglerfish", "scientific": "Ceratiidae", "from": 300, "to": 4000, "note": "The male is a fraction of the size of the female, bites on, and fuses to her permanently, losing his eyes and most of his organs." },
         { "name": "Sperm whale", "scientific": "Physeter macrocephalus", "from": 0, "to": 2250, "note": "Hunts giant squid in total darkness using sound alone. The scars on their heads are from squid that fought back." },
+        { "name": "Colossal squid", "scientific": "Mesonychoteuthis hamiltoni", "from": 100, "to": 2000, "note": "The heaviest invertebrate known: one weighed 495 kg. First filmed alive in its own habitat in March 2025, a 30 cm juvenile at 600 m." },
         { "name": "Gulper eel", "scientific": "Eurypharynx pelecanoides", "from": 500, "to": 3000, "note": "A mouth with a fish attached. It can swallow prey larger than itself." }
       ],
       "vessels": [

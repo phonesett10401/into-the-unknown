@@ -17,7 +17,7 @@ import {
 } from "@/lib/chain";
 import { DEPTH_CURVE, dive, publish, useDepth, waterAt } from "@/lib/dive";
 import Ocean from "./Ocean";
-import ScaleColumn from "./ScaleColumn";
+import EiffelColumn from "./EiffelColumn";
 
 const zones = zonesData.zones;
 const gates = quizData.gates;
@@ -160,7 +160,7 @@ export default function Page() {
   return (
     <main>
       <Ocean />
-      <ScaleColumn />
+      <EiffelColumn />
       <Hud />
 
       <aside className="shelf" aria-label="Badges">

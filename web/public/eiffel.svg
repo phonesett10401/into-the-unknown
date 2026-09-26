@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 330" preserveAspectRatio="none">
+  <defs>
+    <pattern id="lat" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="rgba(128,112,92,0.22)"/>
+      <path d="M0 0L4 4M4 0L0 4" stroke="#b3a288" stroke-width="0.32"/>
+      <path d="M0 4H4" stroke="#9c8b73" stroke-width="0.4"/>
+    </pattern>
+    <pattern id="lat2" width="2.4" height="2.4" patternUnits="userSpaceOnUse">
+      <rect width="2.4" height="2.4" fill="rgba(128,112,92,0.28)"/>
+      <path d="M0 0L2.4 2.4M2.4 0L0 2.4" stroke="#b3a288" stroke-width="0.22"/>
+    </pattern>
+  </defs>
+  <g stroke="#8a7a64" stroke-width="0.7" stroke-linejoin="round">
+    <!-- legs and the great arch, ground to first platform (0 to 57 m) -->
+    <path fill="url(#lat)" fill-rule="evenodd" d="M33 273 Q22 306 2 330 L25 330 Q41 297 65 293 Q89 297 105 330 L128 330 Q108 306 97 273 Z"/>
+    <!-- first to second platform (57 to 115 m), with the opening between the legs -->
+    <path fill="url(#lat)" fill-rule="evenodd" d="M35 266 L46 216 L84 216 L95 266 Z M50 262 L57 224 L73 224 L80 262 Z"/>
+    <!-- the long upper shaft (115 to 276 m) -->
+    <path fill="url(#lat2)" d="M47 208 Q55 140 60.6 56 L69.4 56 Q75 140 83 208 Z"/>
+    <path fill="none" stroke="#9c8b73" stroke-width="0.5" d="M65 56 V208 M52 180 H78 M55 150 H75 M57 120 H73 M59 90 H71"/>
+  </g>
+  <g fill="#6f614f" stroke="#5a4e40" stroke-width="0.5">
+    <!-- first platform, 57 m -->
+    <rect x="28" y="265" width="74" height="9" rx="0.6"/>
+    <path d="M28 265 H102" stroke="#b3a288" stroke-width="0.8"/>
+    <!-- second platform, 115 m -->
+    <rect x="41" y="207" width="48" height="8" rx="0.6"/>
+    <!-- third platform, 276 m -->
+    <rect x="57.5" y="50" width="15" height="6" rx="0.5"/>
+    <!-- lantern and cupola -->
+    <path d="M60 50 L61.2 36 L68.8 36 L70 50 Z"/>
+    <rect x="62" y="29" width="6" height="7" rx="1.5"/>
+    <!-- antenna to 330 m -->
+    <rect x="64.35" y="0" width="1.3" height="30"/>
+  </g>
+</svg>

@@ -4,6 +4,7 @@ import { time } from "./util";
 import {
   Creature, Env, Place, anglerfish, baitBall, dumbo, jellyfish, lanternfish, seabed, siphonophore, snailfish, trenchWalls, whale,
 } from "./creatures";
+import { spermWhale, squid } from "./hunters";
 
 const FOV = 50;
 const PLANE = 30; // distance at which the 3D world moves exactly with the page text
@@ -237,11 +238,20 @@ export function createOcean(canvas: HTMLCanvasElement): { dispose: () => void } 
     jellyfish(place, { depth: 380, xn: -0.66, z: -16, size: 0.9, inner: 0xd08ac0, rim: 0xffd3f0, seed: 2.4 }),
     jellyfish(place, { depth: 470, xn: -0.2, z: -48, size: 1.6, inner: 0x6f8fe8, rim: 0xbfe6ff, seed: 4.1 }),
     lanternfish(place, { depth: 610, xn: -0.5, z: -30, seed: 11 }),
-    jellyfish(place, { depth: 720, xn: -0.7, z: -14, size: 0.8, inner: 0x86a0ff, rim: 0xd7f3ff, seed: 5.3 }),
-    jellyfish(place, { depth: 860, xn: -0.62, z: -26, size: 1.2, inner: 0xc07ad8, rim: 0xf0d0ff, seed: 6.6 }),
-    siphonophore(place, { depth: 1250, xn: 0.45, z: -32 }),
+    jellyfish(place, { depth: 680, xn: -0.78, z: -12, size: 0.8, inner: 0x86a0ff, rim: 0xd7f3ff, seed: 5.3 }),
+    squid(place, {
+      depth: 800, xn: -0.42, z: -22, seed: 1.7, mantleLen: 2.3, mantleR: 0.36, finSpan: 0.45,
+      armLen: 2.9, armR: 0.085, tentLen: 7.5, eye: 0.19, color: 0xa9493c, tilt: 0.35, yaw: 0.5,
+    }),
+    jellyfish(place, { depth: 960, xn: -0.7, z: -30, size: 1.2, inner: 0xc07ad8, rim: 0xf0d0ff, seed: 6.6 }),
+    spermWhale(place, { depth: 1150, xn: 0.46, z: -32 }),
+    siphonophore(place, { depth: 1450, xn: 0.3, z: -42 }),
     lanternfish(place, { depth: 1600, xn: 0.55, z: -34, seed: 23 }),
-    jellyfish(place, { depth: 1900, xn: 0.6, z: -22, size: 1.1, inner: 0x7a0f22, rim: 0x46a8ff, seed: 7.7 }),
+    squid(place, {
+      depth: 1850, xn: 0.5, z: -20, seed: 4.2, mantleLen: 2.5, mantleR: 0.82, finSpan: 1.1,
+      armLen: 2.1, armR: 0.17, tentLen: 3.6, eye: 0.28, color: 0x96302c, tilt: -0.25, yaw: -0.45,
+    }),
+    jellyfish(place, { depth: 2050, xn: -0.75, z: -45, size: 1.1, inner: 0x7a0f22, rim: 0x46a8ff, seed: 7.7 }),
     anglerfish(place, { depth: 2400, xn: 0.48, z: -15 }),
     jellyfish(place, { depth: 3100, xn: 0.62, z: -20, size: 1.0, inner: 0x8a1428, rim: 0x3f9dff, seed: 9.1 }),
     dumbo(place, { depth: 4900, xn: -0.5, z: -20 }),

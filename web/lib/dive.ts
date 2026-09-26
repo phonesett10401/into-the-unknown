@@ -21,7 +21,7 @@ export function publish() {
   subs.forEach((fn) => fn());
 }
 
-function subscribe(fn: () => void) {
+export function subscribe(fn: () => void) {
   subs.add(fn);
   return () => {
     subs.delete(fn);

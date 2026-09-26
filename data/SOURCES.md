@@ -61,3 +61,16 @@ figure is out of date.
 - **"Eight Burj Khalifas to reach the Titanic"** — wrong by arithmetic. It is
   four and a half. Caught before it reached the pitch.
 - **"200 m is two Mahanakhons"** — wrong. 200 m is less than one. Rewritten.
+
+## Squid (added 26 September 2026)
+
+| Figure | Value used | Source |
+|---|---|---|
+| Colossal squid mass | 495 kg, heaviest recorded specimen | Wikipedia / *Polar Biology* review (2017) |
+| Colossal squid depth | ~100 m to over 2,000 m | *Polar Biology* review (2017) |
+| First live footage | 9 March 2025, ~30 cm juvenile at 600 m, South Sandwich Islands, ROV *SuBastian* | Schmidt Ocean Institute; CNN, PBS (April 2025) |
+| Eye size | ~27 cm, giant and colossal squid alike | Te Papa; *Current Biology* (2012), "A unique advantage for giant eyes in giant squid" |
+
+**Corrected:** the giant squid card previously said it has "the largest eye of any known
+animal". The colossal squid's eyes are at least as large and are usually credited as the
+largest. Rewritten to say the two are matched.

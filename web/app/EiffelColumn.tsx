@@ -1,0 +1,111 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { dive, subscribe } from "@/lib/dive";
+
+const TOWER_M = 330; // Eiffel Tower to the antenna tip
+const DIVER_M = 2.3; // a 1.8 m diver plus fins
+const SLOTS = 3;
+const TOTAL = Math.ceil(10935 / TOWER_M);
+
+// Half-width of the tower (in its 130-unit-wide drawing) at a given height in the 330-unit drawing.
+const PROFILE: [number, number][] = [
+  [0, 1], [30, 3], [50, 7.5], [56, 5], [120, 9], [180, 14], [207, 24], [216, 24], [266, 30], [276, 37], [300, 49], [330, 63],
+];
+function halfWidth(y: number) {
+  for (let i = 1; i < PROFILE.length; i++) {
+    const [y1, w1] = PROFILE[i];
+    const [y0, w0] = PROFILE[i - 1];
+    if (y <= y1) return w0 + ((w1 - w0) * (y - y0)) / (y1 - y0);
+  }
+  return 63;
+}
+
+/**
+ * Eiffel Towers stacked tip to base down the left side, at one constant giant scale.
+ * You pass them one at a time; a diver drawn at the same scale marks where you are.
+ */
+export default function EiffelColumn() {
+  const towers = useRef<(HTMLImageElement | null)[]>([]);
+  const diver = useRef<HTMLDivElement>(null);
+  const count = useRef<HTMLParagraphElement>(null);
+  const root = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const update = () => {
+      const vh = dive.vh, vw = window.innerWidth;
+      const px = vh * 2.6;
+      const ppm = px / TOWER_M;
+      const w = (px * 130) / 330;
+      const cx = vw < 640 ? vw * 0.1 : vw * 0.09;
+      const d = dive.depth;
+      const first = Math.floor(d / TOWER_M) - 1;
+      for (let i = 0; i < SLOTS; i++) {
+        const el = towers.current[i];
+        if (!el) continue;
+        const k = first + i;
+        if (k < 0 || k >= TOTAL) {
+          el.style.visibility = "hidden";
+          continue;
+        }
+        const top = (k * TOWER_M - d) * ppm + vh / 2;
+        el.style.visibility = "visible";
+        el.style.height = `${px}px`;
+        el.style.width = `${w}px`;
+        el.style.transform = `translate3d(${cx - w / 2}px, ${top}px, 0)`;
+      }
+      if (diver.current) {
+        const within = ((d % TOWER_M) + TOWER_M) % TOWER_M;
+        const edge = (halfWidth((within / TOWER_M) * 330) / 130) * w;
+        diver.current.style.transform = `translate3d(${cx + Math.min(edge, 44) + 8}px, ${vh / 2}px, 0)`;
+        diver.current.style.setProperty("--diver-h", `${Math.max(4, DIVER_M * ppm)}px`);
+      }
+      if (count.current) {
+        const n = d / TOWER_M;
+        count.current.textContent = d < 1 ? "0 Eiffel Towers down" : `${n < 10 ? n.toFixed(1) : Math.round(n)} Eiffel Towers down`;
+      }
+      if (root.current) {
+        const light = Math.exp(-d / 170);
+        root.current.style.setProperty("--tower-o", String(0.2 + 0.55 * light));
+        root.current.style.setProperty("--tower-b", String(0.5 + 0.5 * light));
+      }
+    };
+    update();
+    window.addEventListener("resize", update);
+    const unsub = subscribe(update);
+    return () => {
+      unsub();
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
+  return (
+    <div className="eiffel" ref={root} aria-hidden="true">
+      {Array.from({ length: SLOTS }, (_, i) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={i}
+          ref={(el) => {
+            towers.current[i] = el;
+          }}
+          className="tower-img"
+          src="/eiffel.svg"
+          alt=""
+          draggable={false}
+        />
+      ))}
+      <div className="diver" ref={diver}>
+        <svg viewBox="0 0 10 30" className="diver-body">
+          <path d="M3 1 L2 5 L4 6 L5 3 Z M7 1 L8 5 L6 6 L5 3 Z" fill="#f4d35e" />
+          <rect x="3.6" y="5" width="2.8" height="14" rx="1.4" fill="#e9eef2" />
+          <rect x="1.9" y="7" width="1.8" height="8" rx="0.9" fill="#f4d35e" />
+          <circle cx="5" cy="22.5" r="3" fill="#e9eef2" />
+          <rect x="3.2" y="21.2" width="3.6" height="1.6" rx="0.8" fill="#7fe3ff" />
+          <path d="M2 11 L0.6 17 M8 11 L9.4 17" stroke="#e9eef2" strokeWidth="1.1" strokeLinecap="round" />
+        </svg>
+        <span className="diver-tag">You, 1.8 m</span>
+      </div>
+      <p className="eiffel-count" ref={count} />
+    </div>
+  );
+}
