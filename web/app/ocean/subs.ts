@@ -174,10 +174,10 @@ export function vessel(p: Place, o: { kind: SubKind; depth: number; xn: number; 
 /** The four submersibles that reached the bottom, resting on the Challenger Deep. */
 export function floorFleet(p: Place): Creature {
   const spots: { kind: SubKind; x: number; z: number; lift: number; yaw: number; top: number }[] = [
-    { kind: "trieste", x: 22, z: -38, lift: 4.4, yaw: 0.5, top: 3.2 },
-    { kind: "challenger", x: -15, z: -26, lift: 4.1, yaw: 0.3, top: 4.2 },
+    { kind: "trieste", x: 19, z: -32, lift: 9.2, yaw: 0.5, top: 1.6 },
+    { kind: "challenger", x: -16.3, z: -24, lift: 9, yaw: 0.3, top: 4.2 },
     { kind: "limiting", x: 10.5, z: -17, lift: 1.9, yaw: -0.6, top: 2.1 },
-    { kind: "fendouzhe", x: -24, z: -44, lift: 2.2, yaw: 0.9, top: 2.3 },
+    { kind: "fendouzhe", x: -12, z: -24, lift: 2.4, yaw: 1.3, top: 1.9 },
   ];
   const group = new THREE.Group();
   const tags: Tag[] = [];

@@ -574,7 +574,7 @@ export function seabed(p: Place): Creature {
   const amphipods = new THREE.Points(aGeo, new THREE.PointsMaterial({ color: 0xf4efe4, size: 0.16, map: glowTexture(), sizeAttenuation: true, transparent: true, opacity: 0.75, depthWrite: false }));
   amphipods.frustumCulled = false;
   const swarm = Array.from({ length: A }, () => ({ r: R() * 2.2, a: R() * 6.283, h: R() * 1.6, sp: 0.6 + R() * 1.4, j: R() * 50 }));
-  const bait = new THREE.Vector3(-8.5, 0, -15);
+  const bait = new THREE.Vector3(-12, 0, -16);
   bait.y = height(bait.x, bait.z + S / 2 - 10) + 0.6;
 
   const group = new THREE.Group();
