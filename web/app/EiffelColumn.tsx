@@ -9,11 +9,11 @@ const SLOTS = 3;
 const TOTAL = Math.ceil(10935 / TOWER_M);
 
 // The image is cropped antenna tip to feet; ASPECT is its width over height.
-const ASPECT = 371 / 695;
+const ASPECT = 2330 / 3548;
 // Half-width of the tower, measured from the image, in units where the tower is 330 tall.
 const PROFILE: [number, number][] = [
-  [0, 1], [15, 1], [30, 9.5], [60, 9], [90, 11.4], [120, 13.3], [150, 16.6], [180, 21.4], [195, 30.9], [225, 35.6],
-  [240, 41.8], [255, 55], [270, 57], [285, 66], [300, 75.5], [315, 85.5], [330, 88],
+  [0, 0.5], [15, 1], [30, 9.9], [45, 8], [75, 8.4], [105, 9.1], [135, 10.6], [165, 12.8], [195, 16.4], [210, 21.4],
+  [225, 21.6], [240, 25.7], [255, 30.3], [270, 36.6], [285, 41.3], [300, 49.9], [315, 58.4], [330, 108],
 ];
 function halfWidth(y: number) {
   for (let i = 1; i < PROFILE.length; i++) {
@@ -21,7 +21,7 @@ function halfWidth(y: number) {
     const [y0, w0] = PROFILE[i - 1];
     if (y <= y1) return w0 + ((w1 - w0) * (y - y0)) / (y1 - y0);
   }
-  return 88;
+  return 108;
 }
 
 /**
@@ -92,9 +92,10 @@ export default function EiffelColumn() {
             towers.current[i] = el;
           }}
           className="tower-img"
-          src="/eiffel.webp"
+          src="/eiffel.svg"
           alt=""
           draggable={false}
+          decoding="async"
         />
       ))}
       <div className="diver" ref={diver}>
