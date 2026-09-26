@@ -44,6 +44,8 @@ type Toast = { text: string; hash?: string } | null;
 export default function Page() {
   const [passed, setPassed] = useState(PREVIEW_ALL ? 0b11111 : 0);
   const [badges, setBadges] = useState(PREVIEW_ALL ? 0b10111 : 0);
+  // Zones skipped for free in demo mode: nothing on-chain, no badge.
+  const [demo, setDemo] = useState(0);
   const [account, setAccount] = useState<string | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
   const [toast, setToast] = useState<Toast>(null);
@@ -157,6 +159,12 @@ export default function Page() {
     [refreshStats],
   );
 
+  const onDemoSkipped = useCallback((i: number) => {
+    setPassed((p) => p | bit(i));
+    setDemo((d) => d | bit(i));
+    setToast({ text: `Skipped ${zones[i].name} for the demo. No badge, nothing recorded on-chain.` });
+  }, []);
+
   return (
     <main>
       <Ocean />
@@ -165,9 +173,9 @@ export default function Page() {
 
       <aside className="shelf" aria-label="Badges">
         {zones.map((z, i) => {
-          const state = badges & bit(i) ? "earned" : passed & bit(i) ? "paid" : "empty";
+          const state = badges & bit(i) ? "earned" : demo & bit(i) ? "skipped" : passed & bit(i) ? "paid" : "empty";
           return (
-            <span key={z.id} className={`slot ${state}`} title={`${z.name}: ${state}`}>
+            <span key={z.id} className={`slot ${state === "skipped" ? "paid" : state}`} title={`${z.name}: ${state}`}>
               {i + 1}
             </span>
           );
@@ -256,6 +264,7 @@ export default function Page() {
               ensureAccount={ensureAccount}
               onCleared={onCleared}
               onSkipped={onSkipped}
+              onDemoSkipped={onDemoSkipped}
               allowSkip
             />
           )}
@@ -271,16 +280,20 @@ export default function Page() {
           <div className="collection">
             {zones.map((z, i) => {
               const earned = !!(badges & bit(i));
+              const how = earned ? "earned" : demo & bit(i) ? "skipped" : "paid";
               return (
                 <div key={z.id} className={`badge ${earned ? "earned" : "paid"}`}>
                   <span className="num">{i + 1}</span>
                   <span className="label">{z.name.replace("The ", "")}</span>
-                  <span className="state">{earned ? "earned" : "paid"}</span>
+                  <span className="state">{how}</span>
                 </div>
               );
             })}
           </div>
-          <FloorVerdict paid={zones.filter((_, i) => !(badges & bit(i))).length} />
+          <FloorVerdict
+            missed={zones.filter((_, i) => !(badges & bit(i))).length}
+            paid={zones.filter((_, i) => !(badges & bit(i)) && !(demo & bit(i))).length}
+          />
           <div className="earn-back">
             {zones.map((z, i) =>
               badges & bit(i) ? null : (
@@ -321,12 +334,13 @@ function Hud() {
   );
 }
 
-function FloorVerdict({ paid }: { paid: number }) {
-  if (paid === 0) return <p className="verdict">Every badge earned. You read the whole ocean.</p>;
+function FloorVerdict({ missed, paid }: { missed: number; paid: number }) {
+  if (missed === 0) return <p className="verdict">Every badge earned. You read the whole ocean.</p>;
   const words = ["", "one zone", "two zones", "three zones", "four zones", "all five zones"];
   return (
     <p className="verdict" data-sc-cue>
-      You paid your way past {words[paid]}. <span>Go back and earn {paid === 1 ? "it" : "them"}.</span>
+      {paid === missed ? "You paid your way past" : "You got past"} {words[missed]}
+      {paid === missed ? "." : ` without earning ${missed === 1 ? "the badge" : "the badges"}.`} <span>Go back and earn {missed === 1 ? "it" : "them"}.</span>
     </p>
   );
 }
@@ -337,9 +351,10 @@ function Gate(props: {
   ensureAccount: () => Promise<string>;
   onCleared: (i: number, tx?: TxResult) => void;
   onSkipped: (i: number, tx?: TxResult) => void;
+  onDemoSkipped?: (i: number) => void;
   allowSkip: boolean;
 }) {
-  const { index: i, stats, ensureAccount, onCleared, onSkipped, allowSkip } = props;
+  const { index: i, stats, ensureAccount, onCleared, onSkipped, onDemoSkipped, allowSkip } = props;
   const g = gates[i];
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -406,6 +421,11 @@ function Gate(props: {
       {allowSkip && (
         <button className="skip" onClick={skip} disabled={!!busy}>
           {busy === "skip" ? "Confirming…" : "or skip for 0.001 AVAX"}
+        </button>
+      )}
+      {allowSkip && onDemoSkipped && (
+        <button className="skip demo" onClick={() => onDemoSkipped(i)} disabled={!!busy}>
+          or skip for this demo (no wallet needed)
         </button>
       )}
       {cleared !== null && skipped !== null && (

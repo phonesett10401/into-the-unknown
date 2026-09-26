@@ -101,7 +101,7 @@ export async function readStats(): Promise<{ cleared: number[]; skipped: number[
 
 export function explainError(e: unknown): string {
   const err = e as { code?: string | number; message?: string; info?: { error?: { code?: number } } };
-  if (err?.message === "NO_WALLET") return "No wallet found. Install MetaMask to go deeper.";
+  if (err?.message === "NO_WALLET") return "No wallet found. Install MetaMask to earn the badge on-chain.";
   if (err?.code === "ACTION_REJECTED" || err?.code === 4001 || err?.info?.error?.code === 4001)
     return "Cancelled in the wallet.";
   if (err?.message?.toLowerCase().includes("insufficient funds")) return "Not enough Fuji AVAX for this.";
